@@ -5,9 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 
-// interface HeaderProps {
-//   lang: string;
-// }
+interface HeaderProps {
+  lang: string;
+}
 
 export default function Header({ lang }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
