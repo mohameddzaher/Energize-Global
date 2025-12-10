@@ -20,7 +20,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-950 to-black">
-      <Header t={t.nav} lang="en" />
+      <Header lang="en" />
       
       <main className="pt-20">
         {/* Hero Section */}
@@ -229,7 +229,7 @@ export default function ContactPage() {
         <Newsletter />
       </main>
       
-      <Footer t={t.footer} lang="en" />
+      <Footer lang="en" />
     </div>
   );
 }
