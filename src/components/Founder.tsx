@@ -82,9 +82,9 @@ export default function Founder({ t }: any) {
               <div className="grid grid-cols-2 gap-3 mt-6">
                 {[
                   { value: "25+", label: "Years Experience", icon: <FaChartLine className="w-4 h-4 text-red-400" /> },
-                  { value: "9+", label: "Companies", icon: <FaBuilding className="w-4 h-4 text-amber-400" /> },
-                  { value: "750+", label: "Team Members", icon: <FaUsers className="w-4 h-4 text-emerald-400" /> },
-                  { value: "6+", label: "Awards", icon: <FaStar className="w-4 h-4 text-cyan-400" /> }
+                  { value: "9+", label: "Companies", icon: <FaBuilding className="w-4 h-4 text-red-400" /> },
+                  { value: "750+", label: "Team Members", icon: <FaUsers className="w-4 h-4 text-red-400" /> },
+                  { value: "6+", label: "Awards", icon: <FaStar className="w-4 h-4 text-red-400" /> }
                 ].map((item, index) => (
                   <div key={index} className="p-3 bg-gradient-to-br from-gray-900/40 to-black/40 rounded-lg border border-gray-800/40">
                     <div className="flex items-center gap-2 mb-1">

@@ -1,12 +1,6 @@
 // About.tsx
 export default function About({ t }: any) {
   const aboutData = t || {};
-  const stats = aboutData.stats || {
-    years: "24+ Years",
-    projects: "500+ Projects",
-    companies: "50+ Companies",
-    countries: "3+ Countries",
-  };
 
   return (
     <section
@@ -37,7 +31,7 @@ export default function About({ t }: any) {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6 items-start">
-          {/* Vision & Mission Cards */}
+          {/* Core Values */}
           <div className="space-y-5">
             {/* Vision Card */}
             <div className="group relative p-5 bg-gradient-to-br from-gray-900/40 to-black/30 rounded-lg border border-gray-800/40 hover:border-red-500/50 transition-all duration-300">
@@ -45,10 +39,9 @@ export default function About({ t }: any) {
               <div className="relative">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-9 h-9 rounded-md bg-gradient-to-br from-redge-500/15 to-amber-500/10 flex items-center justify-center border border-red-500/25">
-                    {/* Vision Icon - Eye Droplet (رمزية للرؤية) */}
                     <svg className="w-4 h-4 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-</svg>
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
                   </div>
                   <h3 className="text-lg font-bold text-white">
                     {aboutData.visionTitle || "Our Vision"}
@@ -56,7 +49,7 @@ export default function About({ t }: any) {
                 </div>
                 <p className="text-gray-300 leading-relaxed text-xs tracking-normal">
                   {aboutData.visionText ||
-                    "We aspire to be the main driver for growth and prosperity..."}
+                    "We aspire to be the main driver for growth and prosperity in the MENA region, creating sustainable value for our clients and communities through innovative business solutions."}
                 </p>
               </div>
             </div>
@@ -67,7 +60,6 @@ export default function About({ t }: any) {
               <div className="relative">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-9 h-9 rounded-md bg-gradient-to-br from-amber-500/15 to-red-500/10 flex items-center justify-center border border-amber-500/25">
-                    {/* Mission Icon - Target */}
                     <svg 
                       className="w-4 h-4 text-red-400" 
                       viewBox="0 0 20 20" 
@@ -82,52 +74,113 @@ export default function About({ t }: any) {
                 </div>
                 <p className="text-gray-300 leading-relaxed text-xs tracking-normal">
                   {aboutData.missionText ||
-                    "To be the leading provider of innovative business solutions..."}
+                    "To empower businesses across Saudi Arabia and the MENA region with comprehensive, innovative solutions that drive growth, efficiency, and competitive advantage in an ever-evolving market landscape."}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Story Card */}
+          {/* Our Differentiators */}
           <div className="relative">
-            <div className="p-5 bg-gradient-to-br from-gray-900/40 to-black/30 rounded-lg border border-gray-800/40 group hover:border-red-500/50 transition-all duration-300">
+            <div className="p-5 bg-gradient-to-br from-gray-900/40 to-black/30 rounded-lg border border-gray-800/40 group transition-all duration-300">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-red-500/5 via-transparent to-amber-500/5 rounded-lg blur opacity-0 group-hover:opacity-30 transition duration-500"></div>
               <div className="relative">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-9 h-9 rounded-md bg-gradient-to-br from-gray-800 to-black flex items-center justify-center border border-gray-700/50">
-                    {/* Story Icon - Document Text */}
                     <svg 
                       className="w-4 h-4 text-red-400" 
                       viewBox="0 0 20 20" 
                       fill="currentColor"
                     >
-                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                      <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <h3 className="text-lg font-bold text-white">
-                    {aboutData.storyTitle || "Our Journey"}
+                    What Sets Us Apart
                   </h3>
                 </div>
                 <p className="text-gray-300 leading-relaxed text-xs mb-5 tracking-normal">
-                  {aboutData.storyText ||
-                    "Since our establishment in 1999, we have been delivering comprehensive solutions..."}
+                  Distinctive advantages that make Energize Business Group your trusted partner
                 </p>
 
-                {/* Stats grid */}
-                <div className="grid grid-cols-2 gap-3">
-                  {Object.entries(stats).map(([key, value]) => (
-                    <div
-                      key={key}
-                      className="p-3 bg-gradient-to-br from-gray-900/50 to-black/40 rounded-md border border-gray-800/30 hover:border-red-500/40 transition-colors group/stat"
-                    >
-                      <div className="text-lg font-bold text-white mb-1 group-hover/stat:text-red-300 transition-colors">
-                        {String(value)}
+                {/* Differentiators Grid */}
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-start gap-3 p-3 bg-gradient-to-br from-gray-900/40 to-black/30 rounded-md border border-gray-800/30 hover:border-red-500/30 transition-all duration-300">
+                    <div className="w-6 h-6 rounded bg-gradient-to-br from-red-900/20 to-black/50 flex items-center justify-center border border-red-500/20 flex-shrink-0">
+                      <svg className="w-3 h-3 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-bold text-white mb-0.5">
+                        End-to-End Solutions
                       </div>
-                      <div className="text-[10px] text-gray-400 uppercase tracking-wide font-medium">
-                        {key.replace(/([A-Z])/g, " $1").trim()}
+                      <div className="text-[10px] text-gray-400 leading-relaxed">
+                        From strategy to execution, we provide comprehensive services across all business functions.
                       </div>
                     </div>
-                  ))}
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 bg-gradient-to-br from-gray-900/40 to-black/30 rounded-md border border-gray-800/30 hover:border-red-500/30 transition-all duration-300">
+                    <div className="w-6 h-6 rounded bg-gradient-to-br from-red-900/20 to-black/50 flex items-center justify-center border border-red-500/20 flex-shrink-0">
+                      <svg className="w-3 h-3 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13 7H7v6h6V7z" />
+                        <path fillRule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-bold text-white mb-0.5">
+                        Integrated Ecosystem
+                      </div>
+                      <div className="text-[10px] text-gray-400 leading-relaxed">
+                        Our portfolio companies work synergistically to deliver seamless, coordinated results.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 bg-gradient-to-br from-gray-900/40 to-black/30 rounded-md border border-gray-800/30 hover:border-red-500/30 transition-all duration-300">
+                    <div className="w-6 h-6 rounded bg-gradient-to-br from-red-900/20 to-black/50 flex items-center justify-center border border-red-500/20 flex-shrink-0">
+                      <svg className="w-3 h-3 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-bold text-white mb-0.5">
+                        Deep Local Expertise
+                      </div>
+                      <div className="text-[10px] text-gray-400 leading-relaxed">
+                        24+ years of in-depth knowledge of Saudi and MENA market dynamics and regulations.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 bg-gradient-to-br from-gray-900/40 to-black/30 rounded-md border border-gray-800/30 hover:border-red-500/30 transition-all duration-300">
+                    <div className="w-6 h-6 rounded bg-gradient-to-br from-red-900/20 to-black/50 flex items-center justify-center border border-red-500/20 flex-shrink-0">
+                      <svg className="w-3 h-3 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-bold text-white mb-0.5">
+                        Agile Innovation
+                      </div>
+                      <div className="text-[10px] text-gray-400 leading-relaxed">
+                        Continuously adapting and innovating to stay ahead of market trends and technologies.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Founding Year Highlight */}
+                <div className="pt-3 border-t border-gray-800/30">
+                  <div className="flex items-center justify-center gap-2">
+                    <svg className="w-3 h-3 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L14 5.414V11a1 1 0 11-2 0V5.414l-1.293 1.293a1 1 0 01-1.414-1.414l4-4A1 1 0 0112 2z" clipRule="evenodd" />
+                    </svg>
+                    <div className="text-[10px] text-gray-400">
+                      <span className="font-bold text-red-300">Founded in 1999</span> • Pioneering business excellence for over two decades
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

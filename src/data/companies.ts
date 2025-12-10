@@ -24,7 +24,7 @@ export const companies: Company[] = [
   },
   {
     name: "Energize Logistics",
-    logo: "/images/Energize Logistics.png",
+    logo: "/images/Energize logistic logo.png",
     url: "https://energize-logistics.com",
     description: "Smart supply chain and distribution solutions",
     industry: "Logistics"
@@ -33,7 +33,7 @@ export const companies: Company[] = [
     name: "Energize Design",
     logo: "/images/Energize Design.png",
     url: "https://manufacturing.energize.com",
-    description: "Innovative industrial and product design",
+    description: "Interior design combines function with style",
     industry: "Design"
   },
   {
@@ -61,7 +61,7 @@ export const companies: Company[] = [
     name: "Little Leaders",
     logo: "/images/little Leaders.png",
     url: "https://little-leaders.org/",
-    description: "Early childhood leadership development",
+    description: "Nurturing young minds to become tomorrow’s role models",
     industry: "Education"
   },
   {
