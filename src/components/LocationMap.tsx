@@ -20,7 +20,7 @@ export default function LocationMap() {
   const locations = {
     jeddah: {
       title: "Jeddah Headquarters",
-      address: "Al Hamra District, Prince Sultan Road",
+      address: "Al Madinah Road",
       coordinates: "21.576898°N, 39.16732°E",
       features: [
         "Main Administration",

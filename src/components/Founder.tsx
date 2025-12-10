@@ -43,7 +43,7 @@ export default function Founder({ t }: any) {
               {!imageError ? (
                 <Image
                   src="/images/dulaim.jpeg"
-                  alt="Mr. Dalem Al Nasher - Founder & Chairman of Energize Global Group"
+                  alt="Mr. Dulaim Al Nasher - Founder & Chairman of Energize Global Group"
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 80vw, 33vw"
@@ -66,7 +66,7 @@ export default function Founder({ t }: any) {
           <div className="md:col-span-2 flex flex-col justify-center">
             <div className="bg-gradient-to-br from-gray-900/60 to-black/50 rounded-xl border border-gray-800/60 p-6 md:p-8">
               <h3 className="text-white text-2xl md:text-2xl font-bold mb-2">
-                {founderData.name || "Mr. Dalem Al Nasher"}
+                {founderData.name || "Mr. Dulaim Al Nasher"}
               </h3>
               <p className="text-red-400 text-md mb-4">
                 {founderData.role || "Founder & Chairman of the Board"}
@@ -109,7 +109,7 @@ export default function Founder({ t }: any) {
             <h4 className="text-white text-lg font-bold mb-4 ">Leadership Profile</h4>
             <div className="space-y-4">
               <p className="text-gray-300 text-base leading-relaxed tracking-normal text-sm">
-                {founderData.bio1 || "Mr. Dalem Al Nasher is the founder and chairman of Energize Global Group with extensive experience in business development and strategic leadership across Saudi Arabia and the MENA region."}
+                {founderData.bio1 || "Mr. Dulaim Al Nasher is the founder and chairman of Energize Global Group with extensive experience in business development and strategic leadership across Saudi Arabia and the MENA region."}
               </p>
               <p className="text-gray-300 text-base leading-relaxed tracking-normal text-sm">
                 {founderData.bio2 || "With an entrepreneurial vision aimed at enabling companies to achieve growth and sustainability through innovative solutions and integrated services, he has established a strong presence in multiple industries."}

@@ -18,7 +18,7 @@ export const languages: Record<Lang, any> = {
     hero: {
       title: "Energize Business Group",
       subtitle: "Driving Growth in Saudi Arabia & MENA Region",
-      description: "Comprehensive solutions in marketing, event management, logistics, and manufacturing since 1999",
+      description: "Comprehensive solutions in marketing, Event Management, Logistics, and Manufacturing Since 1999",
       cta1: "Explore Our Companies",
       cta2: "Get in Touch"
     },
@@ -103,9 +103,9 @@ export const languages: Record<Lang, any> = {
     founder: {
       title: "Founder & Chairman",
       tag: "Leadership",
-      name: "Mr. Dalem Al Nasher",
+      name: "Mr. Dulaim Al Nasher",
       role: "Founder & Chairman of the Board",
-      bio1: "Mr. Dalem Al Nasher is the founder and chairman of Energize Business with extensive experience in business development and strategic leadership.",
+      bio1: "Mr. Dulaim Al Nasher is the founder and chairman of Energize Business with extensive experience in business development and strategic leadership.",
       bio2: "With an entrepreneurial vision aimed at enabling companies to achieve growth and sustainability through innovative solutions and integrated services.",
       bio3: "Thanks to his extensive network and diverse experience, he has built a strong brand that reflects professionalism and quality values."
     },

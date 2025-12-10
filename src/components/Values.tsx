@@ -20,32 +20,32 @@ export default function Values({ t }: any) {
     {
       title: "Excellence & Innovation",
       description: "We place creativity at the heart of every project, delivering innovative solutions with non-traditional ideas.",
-      icon: <FaLightbulb className="w-4 h-4 text-amber-400" />,
-      color: "from-amber-500/20 to-yellow-600/10"
+      icon: <FaLightbulb className="w-4 h-4 text-red-400" />,
+      color: "from-red-500/20 to-red-600/10"
     },
     {
       title: "Passion for Achievement",
       description: "We work with passion and accomplish with pride. Every challenge is a new opportunity to demonstrate our capabilities.",
-      icon: <FaFire className="w-4 h-4 text-orange-400" />,
-      color: "from-orange-500/20 to-red-600/10"
+      icon: <FaFire className="w-4 h-4 text-red-400" />,
+      color: "from-red-500/20 to-red-600/10"
     },
     {
       title: "Team Spirit",
       description: "We believe true success is collective work. Our team strength lies in collaboration and working toward one goal.",
-      icon: <FaUsers className="w-4 h-4 text-emerald-400" />,
-      color: "from-emerald-500/20 to-green-600/10"
+      icon: <FaUsers className="w-4 h-4 text-red-400" />,
+      color: "from-red-500/20 to-red-600/10"
     },
     {
       title: "Continuous Development",
       description: "We continue learning and renewing to stay at the forefront of change, constantly developing our tools and knowledge.",
-      icon: <FaChartLine className="w-4 h-4 text-cyan-400" />,
-      color: "from-cyan-500/20 to-blue-600/10"
+      icon: <FaChartLine className="w-4 h-4 text-red-400" />,
+      color: "from-red-500/20 to-red-600/10"
     },
     {
       title: "Responsibility & Sustainability",
       description: "We ensure our work positively impacts society and the environment, building a more balanced future aligned with Vision 2030.",
-      icon: <FaLeaf className="w-4 h-4 text-green-400" />,
-      color: "from-green-500/20 to-emerald-600/10"
+      icon: <FaLeaf className="w-4 h-4 text-red-400" />,
+      color: "from-red-500/20 to-red-600/10"
     },
   ];
 
