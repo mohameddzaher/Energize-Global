@@ -11,8 +11,8 @@ export const companies: Company[] = [
   {
     name: "Energize Your Business",
     logo: "/images/Energize Your Business.png",
-    url: "https://marketing.energize.com",
-    description: "Digital marketing experts driving online growth",
+    url: "https://energize-sa.com/",
+    description: "A marketing agency driving growth through strategy and creative branding.",
     industry: "Marketing"
   },
   {
