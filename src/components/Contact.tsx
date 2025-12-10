@@ -134,7 +134,7 @@ export default function ContactForm() {
                   </div>
                   <div>
                     <div className="text-gray-500 text-xs mb-0.5">Working Hours</div>
-                    <div className="text-white text-sm">Sunday - Thursday: 8:00 AM - 6:00 PM</div>
+                    <div className="text-white text-sm">Sunday - Thursday: 9:00 AM - 6:00 PM</div>
                   </div>
                 </div>
               </div>
