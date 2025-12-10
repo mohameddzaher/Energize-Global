@@ -1,3 +1,12 @@
+// data/companies.ts
+export interface Company {
+  name: string;
+  logo: string;
+  url: string;
+  description: string;
+  industry: string;
+}
+
 export const companies: Company[] = [
   {
     name: "Energize Your Business",
