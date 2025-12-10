@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { languages } from '@/lib/languages';
+import { languages } from '../i18n';
 import Newsletter from '@/components/Newsletter';
 import Image from 'next/image';
 

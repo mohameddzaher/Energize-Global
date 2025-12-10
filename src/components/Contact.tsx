@@ -80,10 +80,10 @@ export default function ContactForm() {
             <div className="w-10 h-px bg-gradient-to-r from-transparent via-red-500/60 to-transparent"></div>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
-            Let's Start a Conversation
+            Lets Start a Conversation
           </h2>
           <p className="text-gray-400 text-sm max-w-xl mx-auto leading-relaxed">
-            Share your project details and we'll get back to you within 24 hours
+            Share your project details and we will get back to you within 24 hours
           </p>
         </div>
 
@@ -172,7 +172,7 @@ export default function ContactForm() {
                 </div>
                 <h3 className="text-white text-lg font-bold mb-2">Message Sent!</h3>
                 <p className="text-gray-400 text-sm">
-                  Thank you for contacting us. We'll get back to you within 24 hours.
+                  Thank you for contacting us. We will get back to you within 24 hours.
                 </p>
                 <button
                   onClick={() => setSubmitStatus('idle')}
