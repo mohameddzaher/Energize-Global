@@ -17,7 +17,7 @@ export default function Hero({ t }: any) {
   const title = heroData.title || "Energize Business Group";
   const description =
     heroData.description ||
-    "Comprehensive solutions in marketing, event management, logistics, and manufacturing since 1999";
+    "Comprehensive Solutions in Marketing, Event Management, Logistics, and Manufacturing Since 1999";
   const cta1 = heroData.cta1 || "Explore Our Companies";
   const cta2 = heroData.cta2 || "Contact Us";
 
