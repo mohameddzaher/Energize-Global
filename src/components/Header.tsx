@@ -163,8 +163,8 @@ export default function Header({ lang }: HeaderProps) {
               className={`px-4 py-1.5 md:px-5 md:py-2 font-medium text-xs md:text-sm rounded-lg transition-all duration-300 cursor-pointer ${
                 isPastHeroImage 
                   ? currentSection === "contact"
-                    ? "bg-gradient-to-r from-red-600 to-amber-600 text-white font-bold hover:shadow-lg"
-                    : "bg-gradient-to-r from-red-600 to-amber-600 text-white hover:shadow-lg hover:shadow-red-500/20"
+                    ? "bg-gradient-to-r from-red-700 to-red-900 text-white font-bold hover:shadow-lg"
+                    : "bg-gradient-to-r from-red-950 to-red-900 text-white hover:shadow-lg hover:shadow-red-500/20"
                   : currentSection === "contact"
                     ? "bg-gradient-to-r from-red-700 to-red-900 text-white font-bold hover:shadow-lg"
                     : "bg-gradient-to-r from-red-950 to-red-900 text-white hover:shadow-lg hover:shadow-red-500/20"
