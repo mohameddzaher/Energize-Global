@@ -22,12 +22,12 @@ export default function Newsletter({
   };
 
   return (
-    <section className="py-14 bg-gradient-to-b from-black via-gray-950 to-black">
+    <section className="bg-gray-200">
       <div className="mx-auto">
-        <div className="relative bg-gradient-to-br from-gray-900/70 via-black to-gray-900/70 rounded-2xl p-8 md:p-10  border-gray-800/70 overflow-hidden">
+        <div className="relative bg-gray-200 p-8 md:p-10 overflow-hidden">
 
           {/* Dark Red Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-red-900/15 via-black to-red-900/10 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gray-200 pointer-events-none"></div>
 
           {/* Glow Effects */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-red-900/15 via-transparent to-transparent rounded-full blur-3xl opacity-40 pointer-events-none"></div>
@@ -39,18 +39,18 @@ export default function Newsletter({
           <div className="relative z-10 text-center">
 
             {/* Icon */}
-            <div className="w-10 h-10 mx-auto mb-6 rounded-xl bg-gradient-to-br from-red-900/30 to-black border border-gray-800/70 flex items-center justify-center relative">
-              <FaPaperPlane className="w-4 h-4 text-red-400" />
+            <div className="w-9 h-9 mx-auto mb-6 rounded-xl bg-gradient-to-br from-red-900/30 to-black  flex items-center justify-center relative">
+              <FaPaperPlane className="w-3 h-3 text-red-400" />
 
               {/* Icon Glow */}
               <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-red-600/3 rounded-xl blur-md pointer-events-none"></div>
             </div>
 
-            <h2 className="text-white text-2xl md:text-3xl font-bold mb-3 tracking-tight">
+            <h2 className="text-black text-2xl md:text-xl font-bold mb-3 tracking-tight">
               {title}
             </h2>
 
-            <p className="text-gray-400 text-sm mb-8 max-w-lg mx-auto leading-relaxed">
+            <p className="text-gray-600 text-sm mb-8 max-w-lg mx-auto leading-relaxed">
               {subtitle}
             </p>
 
@@ -61,7 +61,7 @@ export default function Newsletter({
                 name="email"
                 placeholder="Enter your email address"
                 required
-                className="flex-1 px-4 py-3.5 bg-gray-900/80 border border-gray-800/80 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-red-900/80 tracking-wide"
+                className="flex-1 px-4 py-3.5 bg-gray-900/80 border border-gray-800/80 rounded-xl text-white placeholder-gray-200 text-sm focus:outline-none focus:border-red-900/80 tracking-wide"
               />
               <button
                 type="submit"
@@ -72,7 +72,7 @@ export default function Newsletter({
             </form>
 
             <div className="mt-6 pt-6 border-t border-gray-800/60">
-              <p className="text-gray-500 text-xs">
+              <p className="text-gray-600 text-xs">
                 By subscribing, you agree to our Privacy Policy and consent to receive updates from us.
               </p>
             </div>
@@ -86,4 +86,4 @@ export default function Newsletter({
       </div>
     </section>
   );
-}
+}                  

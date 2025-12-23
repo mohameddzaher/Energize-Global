@@ -74,7 +74,7 @@ export const languages: Record<Lang, any> = {
         {
           title: "Commitment & Reliability",
           description:
-            "We commit to making our word a promise and our quality a standard. We build trust through precise, transparent project execution.",
+            "We commit to making our word a promise and our quality a standard. We build trust through transparent project execution.",
           //   icon: "🤝"
         },
         {
@@ -104,7 +104,7 @@ export const languages: Record<Lang, any> = {
         {
           title: "Responsibility & Sustainability",
           description:
-            "We ensure our work positively impacts society and the environment, building a more balanced future aligned with Vision 2030.",
+            "We ensure our work positively impacts society, building a more balanced future aligned with Vision 2030.",
           //   icon: "🌱"
         },
       ],

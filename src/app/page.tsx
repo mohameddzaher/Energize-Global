@@ -68,45 +68,45 @@ export default function Home({ searchParams }: any) {
         <Stats />
         
         {/* Portfolio Companies Section */}
-        <section id="companies" className="py-20 px-4 sm:px-6 bg-gradient-to-b from-gray-900/20 to-black">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-14">
-              <div className="inline-flex items-center gap-3 mb-4">
-                <div className="w-16 h-px bg-gradient-to-r from-transparent via-red-500/60 to-transparent"></div>
-                <span className="text-red-400 text-sm font-semibold uppercase tracking-wider">
-                  {t.companies?.portfolioTag || "Our Portfolio"}
-                </span>
-                <div className="w-16 h-px bg-gradient-to-r from-transparent via-red-500/60 to-transparent"></div>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-5">
-                {t.companies?.title || "Our Companies"}
-              </h2>
-              <p className="text-gray-400 text-base max-w-2xl mx-auto leading-relaxed">
-                {t.companies?.description || "Strategic brands and business units under our management"}
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {companies.map((company, index) => (
-                <CompanyCard
-                  key={company.name}
-                  name={company.name}
-                  logo={company.logo}
-                  url={company.url}
-                  description={company.description}
-                  index={index}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
+<section id="companies" className="py-16 px-4 sm:px-6 bg-white">
+  <div className="max-w-7xl mx-auto">
+    <div className="text-center mb-12">
+      <div className="inline-flex items-center gap-3 mb-4">
+        <div className="w-16 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent"></div>
+        <span className="text-red-500 text-sm font-bold uppercase tracking-wider">
+          {t.companies?.portfolioTag || "Our Portfolio"}
+        </span>
+        <div className="w-16 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent"></div>
+      </div>
+      <h2 className="text-2xl md:text-2xl font-bold text-gray-900 mb-5">
+        {t.companies?.title || "Our Companies"}
+      </h2>
+      <p className="text-gray-600 text-base max-w-2xl mx-auto leading-relaxed">
+        {t.companies?.description || "Strategic brands and business units under our management"}
+      </p>
+    </div>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {companies.map((company, index) => (
+        <CompanyCard
+          key={company.name}
+          name={company.name}
+          logo={company.logo}
+          url={company.url}
+          description={company.description}
+          index={index}
+        />
+      ))}
+    </div>
+  </div>
+</section>
         
         <Values t={t.values} />
         <Founder t={t.founder} />
-        <ContactCTA t={t.contact} />
+        {/* <ContactCTA t={t.contact} /> */}
         <Contact />
         <LocationMap />
-        <Blog/>
+        {/* <Blog/> */}
       <Newsletter />
         
         <Footer lang={lang} />

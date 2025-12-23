@@ -71,18 +71,18 @@ export default function ContactForm() {
   };
 
   return (
-    <section id="contact" className="py-12 px-4 sm:px-6 bg-gradient-to-b from-gray-950 to-black">
+    <section id="contact" className="py-12 px-4 sm:px-6 bg-gray-200 to-black">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 mb-3">
-            <div className="w-10 h-px bg-gradient-to-r from-transparent via-red-500/60 to-transparent"></div>
-            <span className="text-red-400 text-xs font-semibold uppercase tracking-wider">Get in Touch</span>
-            <div className="w-10 h-px bg-gradient-to-r from-transparent via-red-500/60 to-transparent"></div>
+            <div className="w-10 h-px bg-gradient-to-r from-transparent via-red-500/90 to-transparent"></div>
+            <span className="text-red-700 text-xs font-semibold uppercase tracking-wider">Get in Touch</span>
+            <div className="w-10 h-px bg-gradient-to-r from-transparent via-red-500/90 to-transparent"></div>
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
+          <h2 className="text-2xl md:text-2xl font-bold text-gray-900 mb-3 tracking-tight">
             Lets Start a Conversation
           </h2>
-          <p className="text-gray-400 text-sm max-w-xl mx-auto leading-relaxed">
+          <p className="text-gray-600 text-sm max-w-xl mx-auto leading-relaxed">
             Share your project details and we will get back to you within 24 hours
           </p>
         </div>
@@ -90,46 +90,46 @@ export default function ContactForm() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Contact Information */}
           <div className="space-y-5">
-            <div className="p-5 bg-gradient-to-br from-gray-900/50 to-black/40 rounded-lg border border-gray-800/50">
+            <div className="p-5 bg-gradient-to-br from-gray-900/90 to-black/50 rounded-lg ">
               <h3 className="text-white text-lg font-bold mb-4">Contact Information</h3>
               
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-red-500/10 to-amber-500/10 border border-red-500/20 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-red-500/20 to-amber-500/10 flex items-center justify-center">
                     <span className="text-sm">📧</span>
                   </div>
                   <div>
-                    <div className="text-gray-500 text-xs mb-0.5">Email</div>
-                    <a href="mailto:Info@energize-sa.com" className="text-white text-sm hover:text-red-400 transition-colors">
+                    <div className="text-gray-400 text-xs mb-0.5">Email</div>
+                    <a href="mailto:Info@energize-sa.com" className="text-white text-sm hover:text-red-400 font-bold transition-colors">
                       Info@energize-sa.com
                     </a>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-red-500/10 to-amber-500/10 border border-red-500/20 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-red-500/20 to-amber-500/10 flex items-center justify-center">
                     <span className="text-sm">📞</span>
                   </div>
                   <div>
-                    <div className="text-gray-500 text-xs mb-0.5">Phone</div>
-                    <a href="tel:0126825858" className="text-white text-sm hover:text-red-400 transition-colors">
+                    <div className="text-gray-400 text-xs mb-0.5">Phone</div>
+                    <a href="tel:0126825858" className=" font-bold text-white text-sm hover:text-red-400 transition-colors">
                       0126825858
                     </a>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-red-500/10 to-amber-500/10 border border-red-500/20 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-red-500/20 to-amber-500/10 flex items-center justify-center">
                     <span className="text-sm">🏢</span>
                   </div>
                   <div>
-                    <div className="text-gray-500 text-xs mb-0.5">Address</div>
-                    <div className="text-white text-sm">Al-Madinah Al-Munawarah Road, Jeddah, Saudi Arabia</div>
+                    <div className="text-gray-400 text-xs mb-0.5">Address</div>
+                    <div className="font-bold text-white text-sm">Al-Madinah Al-Munawarah Road, Jeddah, Saudi Arabia</div>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-red-500/10 to-amber-500/10 border border-red-500/20 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-md bg-gradient-to-br from-red-500/20 to-amber-500/10 flex items-center justify-center">
                     <span className="text-sm">🕐</span>
                   </div>
                   <div>
@@ -141,22 +141,22 @@ export default function ContactForm() {
             </div>
 
             {/* Response Time */}
-            <div className="p-4 bg-gradient-to-r from-red-500/5 to-amber-500/5 rounded-lg border border-red-500/20">
+            <div className="p-4 bg-gradient-to-r from-red-500/40 to-transparent rounded-lg ">
   <div className="flex items-center gap-3">
-    <Bolt className="w-4 h-4 text-red-400" />
+    <Bolt className="w-4 h-4 text-red-700" />
     <div>
-      <div className="text-white text-sm font-bold">Quick Response</div>
-      <div className="text-gray-400 text-xs">We typically respond within 24 hours</div>
+      <div className="text-black text-sm font-bold">Quick Response</div>
+      <div className="text-gray-700 text-xs">We typically respond within 24 hours</div>
     </div>
   </div>
 </div>
 
             {/* Preferred Contact */}
-            <div className="p-4 bg-gradient-to-br from-gray-900/30 to-black/20 rounded-lg border border-gray-800/30">
+            <div className="p-4 bg-gradient-to-br from-gray-900/90 to-black/50 rounded-lg ">
               <div className="text-white text-sm font-bold mb-2">Prefer to Call?</div>
               <a
                 href="tel:0126825858"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-900 to-black border border-gray-800 text-white text-sm rounded-lg hover:border-red-900 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-700 to-black  text-white text-xs rounded-lg hover:border-red-900 transition-all"
               >
                 <span>📞 Call Now</span>
               </a>
@@ -164,7 +164,7 @@ export default function ContactForm() {
           </div>
 
           {/* Contact Form */}
-          <div className="p-5 bg-gradient-to-br from-gray-900/50 to-black/40 rounded-lg border border-gray-800/50">
+          <div className="p-5 bg-transparent rounded-lg ">
             {submitStatus === 'success' ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30 flex items-center justify-center text-2xl">
@@ -185,7 +185,7 @@ export default function ContactForm() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="name" className="text-gray-400 text-xs block mb-1.5">
+                    <label htmlFor="name" className="font-bold text-black text-xs block mb-1.5">
                       Full Name *
                     </label>
                     <input
@@ -195,13 +195,13 @@ export default function ContactForm() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-800/50 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors placeholder-gray-600"
+                      className=" w-full px-3 py-2 bg-gray-800 border border-gray-800/50 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors placeholder-gray-400"
                       placeholder="Your Name"
                     />
                   </div>
                   
                   <div>
-                    <label htmlFor="email" className="text-gray-400 text-xs block mb-1.5">
+                    <label htmlFor="email" className="font-bold text-black text-xs block mb-1.5">
                       Email Address *
                     </label>
                     <input
@@ -211,7 +211,7 @@ export default function ContactForm() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-800/50 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors placeholder-gray-600"
+                      className="w-full px-3 py-2 bg-gray-900/90 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors placeholder-gray-400"
                       placeholder="Your Email"
                     />
                   </div>
@@ -219,7 +219,7 @@ export default function ContactForm() {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="phone" className="text-gray-400 text-xs block mb-1.5">
+                    <label htmlFor="phone" className="font-bold text-black text-xs block mb-1.5">
                       Phone Number
                     </label>
                     <input
@@ -228,13 +228,13 @@ export default function ContactForm() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-800/50 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors placeholder-gray-600"
+                      className="w-full px-3 py-2 bg-gray-900/90 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors placeholder-gray-400"
                       placeholder="Your Phone"
                     />
                   </div>
                   
                   <div>
-                    <label htmlFor="company" className="text-gray-400 text-xs block mb-1.5">
+                    <label htmlFor="company" className="font-bold text-black text-xs block mb-1.5">
                       Company Name
                     </label>
                     <input
@@ -243,14 +243,14 @@ export default function ContactForm() {
                       name="company"
                       value={formData.company}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-800/50 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors placeholder-gray-600"
+                      className="w-full px-3 py-2 bg-gray-900/90 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors placeholder-gray-400"
                       placeholder="Your Company"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="service" className="text-gray-400 text-xs block mb-1.5">
+                  <label htmlFor="service" className="font-bold text-black text-xs block mb-1.5">
                     Service Interest *
                   </label>
                   <select
@@ -259,7 +259,7 @@ export default function ContactForm() {
                     value={formData.service}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 bg-gray-900/50 border border-gray-800/50 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors appearance-none"
+                    className="cursor-pointer w-full px-3 py-2 bg-gray-900/90 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors appearance-none"
                   >
                     <option value="" disabled>Select a service</option>
                     {services.map((service) => (
@@ -271,7 +271,7 @@ export default function ContactForm() {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="text-gray-400 text-xs block mb-1.5">
+                  <label htmlFor="message" className="font-bold text-black text-xs block mb-1.5">
                     Project Details *
                   </label>
                   <textarea
@@ -281,7 +281,7 @@ export default function ContactForm() {
                     onChange={handleChange}
                     required
                     rows={4}
-                    className="w-full px-3 py-2 bg-gray-900/50 border border-gray-800/50 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors placeholder-gray-600 resize-none"
+                    className="w-full px-3 py-2 bg-gray-900/90 rounded-lg text-white text-sm focus:outline-none focus:border-red-500/50 transition-colors placeholder-gray-400 resize-none"
                     placeholder="Tell us about your project, requirements, and timeline..."
                   />
                 </div>
@@ -297,7 +297,7 @@ export default function ContactForm() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-2.5 bg-gradient-to-r from-gray-900 to-black border border-gray-800 text-white text-sm font-semibold rounded-lg hover:border-red-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="cursor-pointer w-full py-2.5 bg-gradient-to-r from-gray-800 to-gray-800 border border-gray-800 text-white text-sm font-semibold rounded-lg hover:border-red-400 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -312,7 +312,7 @@ export default function ContactForm() {
                   )}
                 </button>
 
-                <p className="text-gray-500 text-xs text-center">
+                <p className="text-gray-400 text-xs text-center">
                   By submitting this form, you agree to our Privacy Policy and consent to contact.
                 </p>
               </form>
