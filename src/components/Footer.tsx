@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import toast, { Toaster } from "react-hot-toast"; // Toast Notifications
+import emailjs from "@emailjs/browser";
 
 interface FooterProps {
   lang: string;
@@ -10,10 +13,10 @@ interface FooterProps {
 
 export default function Footer({ lang }: FooterProps) {
   const router = useRouter();
-
   const currentYear = new Date().getFullYear();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // البيانات مباشرة في الكومبوننت
+  // بيانات الروابط
   const navigationLinks = [
     { name: "Home", href: "/" },
     { name: "About Us", href: "/about" },
@@ -36,12 +39,46 @@ export default function Footer({ lang }: FooterProps) {
     { name: "Strategic Investor", description: "Economic growth contributor" },
   ];
 
+  // وظيفة ارسال الايميل
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const emailInput = form.elements.namedItem("footerEmail") as HTMLInputElement;
+    const email = emailInput.value.trim();
+
+    if (!email) return;
+
+    setIsSubmitting(true);
+
+    try {
+      await emailjs.send(
+        "service_tapq0ay",      // Service ID
+        "template_nnnbn17",     // Template ID
+        {
+          email: email,
+          time: new Date().toLocaleString(),
+        },
+        "XYvZHem5gyeZzC-75"     // Public Key
+      );
+      emailInput.value = "";
+      toast.success("Subscribed successfully!");
+    } catch (error) {
+      console.error("Footer Subscription Error:", error);
+      toast.error("Something went wrong. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <footer className="bg-black border-t border-gray-900/50">
+    <footer className="bg-black border-t border-gray-900/50 relative">
+      {/* Toast container */}
+      <Toaster position="top-right" reverseOrder={false} />
+
       {/* Main Footer */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-          
+
           {/* Logo & Description */}
           <div className="space-y-4 md:space-y-5">
             <div className="flex justify-center md:justify-start">
@@ -55,11 +92,10 @@ export default function Footer({ lang }: FooterProps) {
                 />
               </Link>
             </div>
-            
             <p className="text-gray-400 text-xs md:text-sm leading-relaxed tracking-normal text-center md:text-left">
               Leading business conglomerate in Saudi Arabia & MENA since 1999.
             </p>
-            
+
             {/* Vision 2030 Alignment */}
             <div className="pt-3 border-t border-gray-800/50">
               <h5 className="text-gray-300 text-sm font-medium mb-3 text-center md:text-left">Vision 2030 Alignment</h5>
@@ -117,7 +153,7 @@ export default function Footer({ lang }: FooterProps) {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact & Subscription */}
           <div className="mt-4 md:mt-0">
             <h4 className="text-white text-base font-bold mb-4 md:mb-5 pb-2 border-b border-gray-800/50 tracking-wide text-center md:text-left">
               Get In Touch
@@ -153,19 +189,25 @@ export default function Footer({ lang }: FooterProps) {
                 </p>
               </div>
 
-              {/* Subscription */}
+              {/* Subscription Form */}
               <div className="pt-3">
                 <p className="text-gray-500 text-xs mb-2 tracking-wide text-center md:text-left">STAY UPDATED</p>
-                <div className="flex flex-col sm:flex-row gap-2">
+                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="email"
+                    name="footerEmail"
                     placeholder="Your email"
+                    required
                     className="flex-1 px-3 py-2 bg-gray-900/50 border border-gray-800 rounded-lg text-white text-xs md:text-sm placeholder-gray-500 focus:outline-none focus:border-red-500/50 text-center md:text-left"
                   />
-                  <button className="px-3 py-2 bg-gradient-to-r from-red-950 to-red-900 text-white text-xs md:text-sm rounded-lg hover:shadow-lg hover:shadow-red-500/20 transition-all duration-300 whitespace-nowrap">
-                    Subscribe
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="cursor-pointer px-3 py-2 bg-gradient-to-r from-red-950 to-red-900 text-white text-xs md:text-sm rounded-lg hover:shadow-lg hover:shadow-red-500/20 transition-all duration-300 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? "Subscribing..." : "Subscribe"}
                   </button>
-                </div>
+                </form>
                 <p className="text-gray-500 text-[10px] mt-2 text-center md:text-left">
                   Receive latest insights and updates
                 </p>
@@ -183,33 +225,21 @@ export default function Footer({ lang }: FooterProps) {
             <div className="text-gray-500 text-xs text-center md:text-left tracking-wide order-2 md:order-1">
               © {currentYear} Energize Business Group. All rights reserved.
             </div>
-            
+
             {/* Legal Links */}
             <div className="flex items-center gap-3 md:gap-5 order-1 md:order-2 mb-2 md:mb-0">
-              <Link 
-                href="/privacy" 
-                className="text-gray-400 hover:text-white text-xs transition-colors tracking-wide"
-              >
-                Privacy Policy
-              </Link>
+              <Link href="/privacy" className="text-gray-400 hover:text-white text-xs transition-colors tracking-wide">Privacy Policy</Link>
               <div className="text-gray-600">|</div>
-              <Link 
-                href="/terms" 
-                className="text-gray-400 hover:text-white text-xs transition-colors tracking-wide"
-              >
-                Terms & Conditions
-              </Link>
+              <Link href="/terms" className="text-gray-400 hover:text-white text-xs transition-colors tracking-wide">Terms & Conditions</Link>
             </div>
 
             {/* Back to Top */}
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="flex items-center gap-1.5 text-gray-400 hover:text-red-400 transition-colors text-xs tracking-wide group order-3"
+              className="cursor-pointer flex items-center gap-1.5 text-gray-400 hover:text-red-400 transition-colors text-xs tracking-wide group order-3"
             >
               <span>Back to Top</span>
-              <span className="transform group-hover:-translate-y-0.5 transition-transform hidden sm:inline">
-                ↑
-              </span>
+              <span className="transform group-hover:-translate-y-0.5 transition-transform hidden sm:inline">↑</span>
             </button>
           </div>
         </div>

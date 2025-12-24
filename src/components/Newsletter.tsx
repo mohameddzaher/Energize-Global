@@ -1,6 +1,9 @@
 "use client";
 
-import { FaPaperPlane } from 'react-icons/fa';
+import { useState } from "react";
+import { FaPaperPlane } from "react-icons/fa";
+import emailjs from "@emailjs/browser";
+import toast, { Toaster } from "react-hot-toast"; // مكتبة Toast
 
 interface NewsletterProps {
   title?: string;
@@ -11,38 +14,55 @@ export default function Newsletter({
   title = "Stay Updated with Energize",
   subtitle = "Subscribe to receive the latest news, insights, and updates from Energize Global."
 }: NewsletterProps) {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const email = (form.elements.namedItem('email') as HTMLInputElement).value;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    console.log('Subscribing email:', email);
-    form.reset();
-    alert('Thank you for subscribing to our newsletter!');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const form = e.target as HTMLFormElement;
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+
+    try {
+      await emailjs.send(
+        "service_tapq0ay",      // Service ID
+        "template_nnnbn17",     // Newsletter Template ID
+        {
+          email: email,
+          time: new Date().toLocaleString(),
+        },
+        "XYvZHem5gyeZzC-75"     // Public Key
+      );
+
+      form.reset();
+      toast.success("Thank you for subscribing! ✅"); // Toast نجاح
+    } catch (error) {
+      console.error("Newsletter EmailJS Error:", error);
+      toast.error("Something went wrong. Please try again."); // Toast خطأ
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <section className="bg-gray-200">
+    <section className="bg-gray-200 relative">
+      {/* Toast Container */}
+      <Toaster position="top-right" reverseOrder={false} />
+
       <div className="mx-auto">
         <div className="relative bg-gray-200 p-8 md:p-10 overflow-hidden">
 
-          {/* Dark Red Background */}
+          {/* Background Effects */}
           <div className="absolute inset-0 bg-gray-200 pointer-events-none"></div>
-
-          {/* Glow Effects */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-red-900/15 via-transparent to-transparent rounded-full blur-3xl opacity-40 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-red-800/10 via-transparent to-transparent rounded-full blur-3xl opacity-40 pointer-events-none"></div>
-
-          {/* Grid Pattern */}
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:40px_40px] opacity-10 pointer-events-none"></div>
 
           <div className="relative z-10 text-center">
 
             {/* Icon */}
-            <div className="w-9 h-9 mx-auto mb-6 rounded-xl bg-gradient-to-br from-red-900/30 to-black  flex items-center justify-center relative">
+            <div className="w-9 h-9 mx-auto mb-6 rounded-xl bg-gradient-to-br from-red-900/30 to-black flex items-center justify-center relative">
               <FaPaperPlane className="w-3 h-3 text-red-400" />
-
-              {/* Icon Glow */}
               <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-red-600/3 rounded-xl blur-md pointer-events-none"></div>
             </div>
 
@@ -55,7 +75,10 @@ export default function Newsletter({
             </p>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+            >
               <input
                 type="email"
                 name="email"
@@ -63,11 +86,13 @@ export default function Newsletter({
                 required
                 className="flex-1 px-4 py-3.5 bg-gray-900/80 border border-gray-800/80 rounded-xl text-white placeholder-gray-200 text-sm focus:outline-none focus:border-red-900/80 tracking-wide"
               />
+
               <button
                 type="submit"
-                className="px-6 py-3.5 bg-gradient-to-r from-gray-900 to-black border border-gray-800 text-white font-semibold rounded-xl text-sm tracking-wide whitespace-nowrap cursor-pointer hover:border-red-900/80 hover:shadow-lg hover:shadow-red-900/10 transition-all duration-300 flex items-center justify-center gap-2"
+                disabled={isSubmitting}
+                className="px-6 py-3.5 bg-gradient-to-r from-gray-900 to-black border border-gray-800 text-white font-semibold rounded-xl text-sm tracking-wide whitespace-nowrap cursor-pointer hover:border-red-900/80 hover:shadow-lg hover:shadow-red-900/10 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Subscribe
+                {isSubmitting ? "Subscribing..." : "Subscribe"}
               </button>
             </form>
 
@@ -86,4 +111,4 @@ export default function Newsletter({
       </div>
     </section>
   );
-}                  
+}

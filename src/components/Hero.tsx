@@ -40,7 +40,7 @@ export default function Hero({ t }: any) {
       {/* Full Background Image */}
       <div className="absolute inset-0 z-0 ">
         <Image
-          src="/images/NEW YORK.jpeg"
+          src="/images/mapp.jpeg"
           alt="Energize Business Group Headquarters"
           fill
           className="object-cover"
