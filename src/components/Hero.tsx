@@ -70,7 +70,7 @@ export default function Hero({ t }: any) {
             {/* Main Title */}
             <div className="space-y-2">
               <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
-                <span className="text-red-400">Energize</span>
+                <span className="text-red-400">ENERGIZE</span>
                 <br />
                 <span className="text-white">Business Group</span>
               </h1>

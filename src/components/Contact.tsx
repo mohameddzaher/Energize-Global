@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Bolt } from "lucide-react";
+import emailjs from "@emailjs/browser";
 
 interface FormData {
   name: string;
@@ -39,36 +40,79 @@ export default function ContactForm() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
     
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+  //   try {
+  //     // Simulate API call
+  //     await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // In production, you would send the data to your backend
-      console.log('Form submitted:', formData);
+  //     // In production, you would send the data to your backend
+  //     console.log('Form submitted:', formData);
       
-      setSubmitStatus('success');
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        service: '',
-        message: ''
-      });
+  //     setSubmitStatus('success');
+  //     setFormData({
+  //       name: '',
+  //       email: '',
+  //       phone: '',
+  //       company: '',
+  //       service: '',
+  //       message: ''
+  //     });
       
-      // Reset success message after 5 seconds
-      setTimeout(() => setSubmitStatus('idle'), 5000);
-    } catch (error) {
-      console.error('Submission error:', error);
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  //     // Reset success message after 5 seconds
+  //     setTimeout(() => setSubmitStatus('idle'), 5000);
+  //   } catch (error) {
+  //     console.error('Submission error:', error);
+  //     setSubmitStatus('error');
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setSubmitStatus("idle");
+
+  try {
+    await emailjs.send(
+      "service_tapq0ay",     // Service ID
+      "template_n4tm2zs",    // Template ID
+      {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.company,
+        service: formData.service,
+        message: formData.message,
+        time: new Date().toLocaleString(),
+      },
+      "XYvZHem5gyeZzC-75"    // Public Key
+    );
+
+    setSubmitStatus("success");
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      company: "",
+      service: "",
+      message: "",
+    });
+
+    setTimeout(() => setSubmitStatus("idle"), 5000);
+  } catch (error) {
+    console.error("EmailJS Error:", error);
+    setSubmitStatus("error");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
 
   return (
     <section id="contact" className="py-12 px-4 sm:px-6 bg-gray-200 to-black">

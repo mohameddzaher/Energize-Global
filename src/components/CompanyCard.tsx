@@ -155,7 +155,7 @@ export default function CompanyCard({
 
       <div className="relative z-10 flex flex-col items-center justify-center h-full">
         {/* Logo area - أصغر حجم */}
-        <div className="w-20 h-12 mb-3 relative">
+        <div className="w-35 h-15 mb-3 relative">
           <Image
             src={logo}
             alt={name}
@@ -168,7 +168,7 @@ export default function CompanyCard({
 
         {/* Content - Centered */}
         <div className="space-y-1.5 text-center flex-1 flex flex-col justify-center">
-          <h3 className="text-sm font-bold text-white group-hover:text-red-300 transition-colors line-clamp-2">
+          <h3 className="text-md font-bold text-white group-hover:text-red-300 transition-colors line-clamp-2">
             {name}
           </h3>
 
@@ -179,8 +179,8 @@ export default function CompanyCard({
           )}
 
           {/* Visit button - أصغر */}
-          <div className="pt-2 mt-auto">
-            <div className="inline-flex items-center gap-1 text-[10px] font-medium text-red-400 group-hover:text-red-300 transition-colors">
+          <div className=" mt-auto">
+            <div className="inline-flex items-center gap-1 text-[12px] text-red-400 group-hover:text-red-300 transition-colors">
               <span>Visit</span>
               <svg
                 className="w-2.5 h-2.5 group-hover:translate-x-0.5 transition-transform"
