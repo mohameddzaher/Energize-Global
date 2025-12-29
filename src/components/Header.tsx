@@ -143,7 +143,7 @@ export default function Header({ lang }: HeaderProps) {
     <Image
       src="/images/logo.png"
       alt="Company Logo"
-      width={120}
+      width={150}
       height={40}
       className="object-contain transition-all duration-300"
     />
@@ -152,7 +152,7 @@ export default function Header({ lang }: HeaderProps) {
     <Image
       src="/images/Red comma.png"
       alt="Company Logo"
-      width={100}
+      width={140}
       height={40}
       className="object-contain transition-all duration-300"
     />
