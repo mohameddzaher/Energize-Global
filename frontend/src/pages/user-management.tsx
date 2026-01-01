@@ -12,7 +12,7 @@ export default function UserManagement() {
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
     fullName: '',
     role: 'user' as 'user' | 'admin',
@@ -57,7 +57,7 @@ export default function UserManagement() {
         setUsers(prev => [...prev, result.data.user]);
         setShowCreateModal(false);
         setFormData({ 
-          username: '', 
+          email: '', 
           password: '', 
           fullName: '', 
           role: 'user',
@@ -78,7 +78,7 @@ export default function UserManagement() {
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
     setFormData({
-      username: user.username,
+      email: user.email,
       password: '',
       fullName: user.fullName,
       role: user.role,
@@ -108,7 +108,7 @@ export default function UserManagement() {
         setShowEditModal(false);
         setSelectedUser(null);
         setFormData({ 
-          username: '', 
+          email: '', 
           password: '', 
           fullName: '', 
           role: 'user',
@@ -272,7 +272,7 @@ export default function UserManagement() {
                     Role
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Username
+                    Email
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Booking Permissions
@@ -300,7 +300,7 @@ export default function UserManagement() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-300">@{user.username}</div>
+                      <div className="text-sm text-gray-300">@{user.email}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getPermissionsColor(user)}`}>
@@ -364,14 +364,24 @@ export default function UserManagement() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
-                <input
+                <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                {/* <input
                   type="text"
-                  value={formData.username}
-                  onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] focus:border-transparent text-white"
                   required
-                />
+                /> */}
+
+                <label>Email</label>
+<input
+  type="email"
+  value={formData.email}
+  onChange={(e) =>
+    setFormData(prev => ({ ...prev, email: e.target.value }))
+  }
+  required
+/>
               </div>
 
               <div>
@@ -482,11 +492,11 @@ export default function UserManagement() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
                 <input
                   type="text"
-                  value={formData.username}
-                  onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] focus:border-transparent text-white"
                   required
                 />

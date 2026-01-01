@@ -102,7 +102,7 @@ import User from '../models/User.js';
 export const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()
-      .populate('user', 'username fullName')
+      .populate('user', 'email fullName')
       .sort({ startTime: 1 });
 
     res.status(200).json({
@@ -170,7 +170,7 @@ export const createBooking = async (req, res) => {
       roomType
     });
 
-    const booking = await Booking.findById(newBooking._id).populate('user', 'username fullName');
+    const booking = await Booking.findById(newBooking._id).populate('user', 'email fullName');
 
     res.status(201).json({
       status: 'success',

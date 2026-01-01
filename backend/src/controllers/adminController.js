@@ -136,7 +136,7 @@ import User from '../models/User.js';
 export const getAllBookingsAdmin = async (req, res) => {
   try {
     const bookings = await Booking.find()
-      .populate('user', 'username fullName role')
+      .populate('user', 'email fullName role')
       .sort({ startTime: -1 });
 
     res.status(200).json({
@@ -193,7 +193,7 @@ export const updateBooking = async (req, res) => {
         ...(roomType && { roomType })
       },
       { new: true, runValidators: true }
-    ).populate('user', 'username fullName role');
+    ).populate('user', 'email fullName role');
 
     if (!booking) {
       return res.status(404).json({

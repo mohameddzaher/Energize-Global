@@ -65,7 +65,7 @@ dotenv.config();
 
 const users = [
   {
-    username: 'user1',
+    email: 'user1',
     password: 'password123',
     fullName: 'User One',
     role: 'user',
@@ -75,7 +75,7 @@ const users = [
     }
   },
   {
-    username: 'user2', 
+    email: 'user2', 
     password: 'password123',
     fullName: 'User Two',
     role: 'user',
@@ -85,7 +85,7 @@ const users = [
     }
   },
   {
-    username: 'admin',
+    email: 'admin',
     password: 'admin123',
     fullName: 'Administrator', 
     role: 'admin',
@@ -112,7 +112,7 @@ const createUsers = async () => {
     console.log('\n👥 Created Users:');
     console.log('================');
     users.forEach(user => {
-      console.log(`Username: ${user.username}`);
+      console.log(`Email: ${user.email}`);
       console.log(`Password: ${user.password}`);
       console.log(`Full Name: ${user.fullName}`);
       console.log(`Role: ${user.role}`);

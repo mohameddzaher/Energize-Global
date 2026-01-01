@@ -4,13 +4,13 @@ import { Booking, BookingFormData, AuthResponse, AdminBooking, AvailableRoom } f
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://energize-backend.onrender.com/api';
 // Auth API
 export const authAPI = {
-  login: async (username: string, password: string): Promise<AuthResponse> => {
+  login: async (email: string, password: string): Promise<AuthResponse> => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
     return response.json();
   },

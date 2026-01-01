@@ -1,7 +1,8 @@
+import { email } from './../node_modules/zod/src/v4/core/regexes';
 
 export interface User {
   id: string;
-  username: string;
+  email: string;
   fullName: string;
   role: 'user' | 'admin';
 }

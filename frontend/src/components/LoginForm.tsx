@@ -6,7 +6,7 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ onLogin }: LoginFormProps) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -17,7 +17,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
     setError('');
 
     try {
-      const result = await authAPI.login(username, password);
+      const result = await authAPI.login(email, password);
       
       if (result.status === 'success') {
         localStorage.setItem('token', result.token);
@@ -48,14 +48,14 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
           <input
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] focus:border-transparent text-white placeholder-gray-400 transition-all duration-200"
             required
-            placeholder="Enter your username"
+            placeholder="Enter your email"
           />
         </div>
 

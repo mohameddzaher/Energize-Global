@@ -9,23 +9,23 @@ const signToken = (id) => {
 
 export const login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     // 1) Check if username and password exist
-    if (!username || !password) {
+    if (!email || !password) {
       return res.status(400).json({
         status: 'fail',
-        message: 'Please provide username and password!'
+        message: 'Please provide email and password!'
       });
     }
 
     // 2) Check if user exists && password is correct
-    const user = await User.findOne({ username }).select('+password');
+    const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(401).json({
         status: 'fail',
-        message: 'Incorrect username or password'
+        message: 'Incorrect email or password'
       });
     }
 
@@ -38,7 +38,7 @@ export const login = async (req, res) => {
       data: {
         user: {
           id: user._id,
-          username: user.username,
+          email: user.email,
           fullName: user.fullName,
           role: user.role
         }

@@ -271,7 +271,7 @@ export default function AdminDashboard() {
   {booking.user?.fullName || "Unknown User"}
 </div>
 <div className="text-sm text-gray-300">
-  @{booking.user?.username || "unknown"}
+  @{booking.user?.email || "unknown"}
 </div>
 <div className="text-sm text-gray-400 capitalize">
   {booking.user?.role || "unknown"}
