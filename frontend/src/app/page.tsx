@@ -109,7 +109,7 @@ export default function Home({ searchParams }: any) {
         {/* <Blog/> */}
       <Newsletter />
         
-        <Footer lang={lang} />
+        {/* <Footer lang={lang} /> */}
       </div>
     </main>
   );

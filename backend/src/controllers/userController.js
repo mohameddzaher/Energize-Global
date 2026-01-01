@@ -30,7 +30,8 @@ export const createUser = async (req, res) => {
     const { email, password, fullName, role, bookingPermissions } = req.body;
 
     // 1️⃣ Check if user already exists
-    const existingUser = await User.findOne({ email });
+    // const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
     if (existingUser) {
       return res.status(400).json({
         status: 'fail',

@@ -50,7 +50,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
           <input
-            type="text"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] focus:border-transparent text-white placeholder-gray-400 transition-all duration-200"
@@ -87,23 +87,6 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         </button>
       </form>
 
-      {/* <div className="mt-6 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
-        <p className="font-medium text-[#f37121] text-sm mb-2">Test Accounts:</p>
-        <div className="text-xs text-gray-400 space-y-1">
-          <div className="flex justify-between">
-            <span>User 1:</span>
-            <span>user1 / password123</span>
-          </div>
-          <div className="flex justify-between">
-            <span>User 2:</span>
-            <span>user2 / password123</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Admin:</span>
-            <span>admin / admin123</span>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 }
