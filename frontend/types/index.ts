@@ -1,10 +1,22 @@
-import { email } from './../node_modules/zod/src/v4/core/regexes';
+// import { email } from './../node_modules/zod/src/v4/core/regexes';
+
+// export interface User {
+//   id: string;
+//   email: string;
+//   fullName: string;
+//   role: 'user' | 'admin';
+// }
 
 export interface User {
-  id: string;
+  _id?: string;
+  id?: string;
   email: string;
   fullName: string;
-  role: 'user' | 'admin';
+  role: "user" | "admin";
+  bookingPermissions?: {
+    smallRoom: boolean;
+    largeRoom: boolean;
+  };
 }
 
 export interface ContactPerson {

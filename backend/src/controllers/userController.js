@@ -25,13 +25,88 @@ export const getAllUsers = async (req, res) => {
 };
 
 // Create new user (admin only)
+// export const createUser = async (req, res) => {
+//   try {
+//     const { email, password, fullName, role, bookingPermissions } = req.body;
+
+//     // 1️⃣ Check if user already exists
+//     // const existingUser = await User.findOne({ email });
+//     const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+//     if (existingUser) {
+//       return res.status(400).json({
+//         status: 'fail',
+//         message: 'User with this email already exists'
+//       });
+//     }
+
+//     // 2️⃣ Create new user
+//     const newUser = await User.create({
+//       email,
+//       password,
+//       fullName,
+//       role: role || 'user',
+//       bookingPermissions: bookingPermissions || {
+//         smallRoom: true,
+//         largeRoom: false
+//       }
+//     });
+
+//     // 3️⃣ Send email to user
+//     const bookingLink = `${process.env.FRONTEND_URL}/meeting-room`;
+
+//     await sendEmail({
+//       to: email,
+//       subject: 'Your Meeting Room Access',
+//       html: `
+//         <h2>Welcome ${fullName}</h2>
+//         <p>Your account has been created by the admin.</p>
+//         <p><strong>Email:</strong> ${email}</p>
+//         <p><strong>Password:</strong> ${password}</p>
+//         <p>
+//           <a href="${bookingLink}" target="_blank">
+//             Click here to book a meeting room
+//           </a>
+//         </p>
+//       `
+//     });
+
+//     // 4️⃣ Return user without password
+//     const userResponse = await User.findById(newUser._id).select('-password');
+
+//     res.status(201).json({
+//       status: 'success',
+//       data: {
+//         user: userResponse
+//       }
+//     });
+//   } catch (err) {
+//     res.status(500).json({
+//       status: 'error',
+//       message: err.message
+//     });
+//   }
+// };
+
+import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
+import sendEmail from '../../utils/sendEmail.js';
+
+// Create new user (admin only)
 export const createUser = async (req, res) => {
   try {
     const { email, password, fullName, role, bookingPermissions } = req.body;
 
-    // 1️⃣ Check if user already exists
-    // const existingUser = await User.findOne({ email });
-    const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    if (!normalizedEmail || !password || !fullName) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'email, password, fullName are required'
+      });
+    }
+
+    // 1) Check if user exists
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(400).json({
         status: 'fail',
@@ -39,9 +114,9 @@ export const createUser = async (req, res) => {
       });
     }
 
-    // 2️⃣ Create new user
+    // 2) Create user
     const newUser = await User.create({
-      email,
+      email: normalizedEmail,
       password,
       fullName,
       role: role || 'user',
@@ -51,36 +126,48 @@ export const createUser = async (req, res) => {
       }
     });
 
-    // 3️⃣ Send email to user
+    // 3) Prepare email
     const bookingLink = `${process.env.FRONTEND_URL}/meeting-room`;
 
-    await sendEmail({
-      to: email,
-      subject: 'Your Meeting Room Access',
-      html: `
-        <h2>Welcome ${fullName}</h2>
-        <p>Your account has been created by the admin.</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Password:</strong> ${password}</p>
-        <p>
-          <a href="${bookingLink}" target="_blank">
-            Click here to book a meeting room
-          </a>
-        </p>
-      `
-    });
+    // 4) Try send email لكن بدون ما نكسر الـ API لو فشل
+    let emailSent = false;
+    try {
+      await sendEmail({
+        to: normalizedEmail,
+        subject: 'Your Meeting Room Access',
+        html: `
+          <h2>Welcome ${fullName}</h2>
+          <p>Your account has been created by the admin.</p>
+          <p><strong>Email:</strong> ${normalizedEmail}</p>
+          <p><strong>Password:</strong> ${password}</p>
+          <p>
+            <a href="${bookingLink}" target="_blank" rel="noreferrer">
+              Click here to book a meeting room
+            </a>
+          </p>
+        `
+      });
+      emailSent = true;
+    } catch (mailErr) {
+      // مهم: نسجل الخطأ بس منرجعش 500
+      console.error('❌ Email sending failed:', mailErr?.message || mailErr);
+    }
 
-    // 4️⃣ Return user without password
+    // 5) Return user without password
     const userResponse = await User.findById(newUser._id).select('-password');
 
-    res.status(201).json({
+    return res.status(201).json({
       status: 'success',
+      message: emailSent
+        ? 'User created and email sent'
+        : 'User created but email was NOT sent (check email config)',
       data: {
-        user: userResponse
+        user: userResponse,
+        emailSent
       }
     });
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       message: err.message
     });
