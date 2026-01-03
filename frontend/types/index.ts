@@ -17,6 +17,7 @@ export interface User {
     smallRoom: boolean;
     largeRoom: boolean;
   };
+  mustChangePassword?: boolean;
 }
 
 export interface ContactPerson {
