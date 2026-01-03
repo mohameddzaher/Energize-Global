@@ -115,14 +115,14 @@ export const createUser = async (req, res) => {
     // إرسال الإيميل مباشرة (بدون setTimeout) لضمان الإرسال
     (async () => {
       try {
-        // التحقق من وجود إعدادات الإيميل
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-          console.warn(`⚠️ Cannot send email to ${normalizedEmail}: EMAIL_USER or EMAIL_PASS not configured`);
+        // التحقق من وجود إعدادات Resend API Key
+        if (!process.env.RESEND_API_KEY) {
+          console.warn(`⚠️ Cannot send email to ${normalizedEmail}: RESEND_API_KEY not configured`);
           return;
         }
 
         console.log(`📧 Preparing to send welcome email to: ${normalizedEmail}`);
-        console.log(`📧 Using email: ${process.env.EMAIL_USER}`);
+        console.log(`📧 Using Resend service`);
         
         await sendEmail({
           to: normalizedEmail,
