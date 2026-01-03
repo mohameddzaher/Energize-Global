@@ -825,7 +825,7 @@
 
 // ------- gooooooood
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { Booking } from '../types';
 import BookingCard from './BookingCard';
 import { Maximize2, Minimize2 } from 'lucide-react';
@@ -874,27 +874,43 @@ export default function FullScreenScheduleGrid({
     d1.getMonth() === d2.getMonth() &&
     d1.getDate() === d2.getDate();
 
-  // ✅ فلترة الحجوزات بناءً على اليوم ونوع الغرفة
-  const filteredBookings = bookings.filter(booking => {
-    const bookingDate = new Date(booking.startTime);
-    const sameDay = isSameDay(bookingDate, selectedDate);
-    
-    if (selectedRoomType === 'both') {
-      return sameDay;
-    } else {
-      return sameDay && booking.roomType === selectedRoomType;
-    }
-  });
+  // ✅ فلترة الحجوزات بناءً على اليوم ونوع الغرفة - Optimized with useMemo
+  const filteredBookings = useMemo(() => {
+    return bookings.filter(booking => {
+      const bookingDate = new Date(booking.startTime);
+      const sameDay = isSameDay(bookingDate, selectedDate);
+      
+      if (selectedRoomType === 'both') {
+        return sameDay;
+      } else {
+        return sameDay && booking.roomType === selectedRoomType;
+      }
+    });
+  }, [bookings, selectedDate, selectedRoomType]);
 
-  const getBookingsForHour = (hour: number) => {
-    return filteredBookings.filter(booking => {
+  // Optimized bookings map for faster lookups
+  const bookingsByHour = useMemo(() => {
+    const bookingsMap = new Map<number, Booking[]>();
+    filteredBookings.forEach(booking => {
       const startTime = new Date(booking.startTime);
       const endTime = new Date(booking.endTime);
       const startHour = startTime.getHours();
       const endHour = endTime.getHours();
       const endMinutes = endTime.getMinutes();
-      return (hour >= startHour && hour < endHour) || (hour === endHour && endMinutes > 0);
+      
+      for (let hour = startHour; hour <= endHour; hour++) {
+        if (hour === endHour && endMinutes === 0) break;
+        if (!bookingsMap.has(hour)) {
+          bookingsMap.set(hour, []);
+        }
+        bookingsMap.get(hour)!.push(booking);
+      }
     });
+    return bookingsMap;
+  }, [filteredBookings]);
+
+  const getBookingsForHour = (hour: number) => {
+    return bookingsByHour.get(hour) || [];
   };
 
   const formatHour = (hour: number) => {
@@ -936,17 +952,23 @@ export default function FullScreenScheduleGrid({
         isFullScreen ? 'p-2' : ''
       }`}
     >
-      {/* Header مع أزرار الغرف على الشمال */}
-      <div className="bg-gray-900 px-4 py-3 border-b border-gray-700 shrink-0">
+      {/* Header مع أزرار الغرف على الشمال - Larger for big screens */}
+      <div className={`bg-gray-900 border-b border-gray-700 shrink-0 ${
+        isFullScreen ? 'px-6 py-4' : 'px-4 py-3'
+      }`}>
         <div className="flex items-center justify-between gap-4">
           {/* الجزء الأيسر: العنوان وأزرار الغرف */}
           <div className="flex items-center gap-4 flex-1 min-w-0">
             {/* العنوان */}
             <div className="flex-shrink-0">
-              <h3 className="text-md font-semibold text-[#f37121] leading-tight">
+              <h3 className={`font-semibold text-[#f37121] leading-tight ${
+                isFullScreen ? 'text-2xl sm:text-3xl md:text-4xl' : 'text-md'
+              }`}>
                 {getGridTitle()}
               </h3>
-              <p className="text-gray-400 text-sm leading-tight">
+              <p className={`text-gray-400 leading-tight ${
+                isFullScreen ? 'text-lg sm:text-xl md:text-2xl mt-1' : 'text-sm'
+              }`}>
                 {selectedDate.toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
@@ -956,26 +978,36 @@ export default function FullScreenScheduleGrid({
               </p>
             </div>
             
-            {/* فاصل ومعلومات الغرفة */}
+            {/* فاصل ومعلومات الغرفة - Larger for big screens */}
             <div className="hidden sm:flex items-center gap-2">
-              <div className="w-px h-6 bg-gray-600"></div>
+              <div className={`bg-gray-600 ${
+                isFullScreen ? 'w-0.5 h-8' : 'w-px h-6'
+              }`}></div>
               <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${
+                <div className={`rounded-full ${
+                  isFullScreen ? 'w-3 h-3' : 'w-2 h-2'
+                } ${
                   selectedRoomType === 'small' ? 'bg-green-500' : 
                   selectedRoomType === 'large' ? 'bg-blue-500' : 'bg-[#f37121]'
                 }`}></div>
-                <span className="text-xs text-gray-300 whitespace-nowrap">
+                <span className={`text-gray-300 whitespace-nowrap ${
+                  isFullScreen ? 'text-base sm:text-lg md:text-xl' : 'text-xs'
+                }`}>
                   {getRoomInfoText()}
                 </span>
               </div>
             </div>
 
-            {/* Room Selection Buttons على الشمال */}
+            {/* Room Selection Buttons على الشمال - Larger for big screens */}
             {onRoomTypeChange && (
-              <div className="flex gap-1 bg-gray-800 p-1 rounded-lg border border-gray-700 ml-2">
+              <div className={`flex gap-1 bg-gray-800 rounded-lg border border-gray-700 ml-2 ${
+                isFullScreen ? 'p-2' : 'p-1'
+              }`}>
                 <button
                   onClick={() => handleRoomTypeChange('both')}
-                  className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 whitespace-nowrap ${
+                  className={`px-3 py-1 rounded font-medium transition-all duration-200 whitespace-nowrap ${
+                    isFullScreen ? 'text-base sm:text-lg md:text-xl px-4 py-2' : 'text-xs px-3 py-1'
+                  } ${
                     selectedRoomType === 'both'
                       ? 'bg-[#f37121] text-white shadow-lg'
                       : 'text-gray-300 hover:text-white hover:bg-gray-700'
@@ -985,7 +1017,9 @@ export default function FullScreenScheduleGrid({
                 </button>
                 <button
                   onClick={() => handleRoomTypeChange('small')}
-                  className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 whitespace-nowrap ${
+                  className={`px-3 py-1 rounded font-medium transition-all duration-200 whitespace-nowrap ${
+                    isFullScreen ? 'text-base sm:text-lg md:text-xl px-4 py-2' : 'text-xs px-3 py-1'
+                  } ${
                     selectedRoomType === 'small'
                       ? 'bg-green-500 text-white shadow-lg'
                       : 'text-gray-300 hover:text-white hover:bg-gray-700'
@@ -995,7 +1029,9 @@ export default function FullScreenScheduleGrid({
                 </button>
                 <button
                   onClick={() => handleRoomTypeChange('large')}
-                  className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200 whitespace-nowrap ${
+                  className={`px-3 py-1 rounded font-medium transition-all duration-200 whitespace-nowrap ${
+                    isFullScreen ? 'text-base sm:text-lg md:text-xl px-4 py-2' : 'text-xs px-3 py-1'
+                  } ${
                     selectedRoomType === 'large'
                       ? 'bg-blue-500 text-white shadow-lg'
                       : 'text-gray-300 hover:text-white hover:bg-gray-700'
@@ -1007,36 +1043,52 @@ export default function FullScreenScheduleGrid({
             )}
           </div>
 
-          {/* زرار التكبير على اليمين بعيد عن الأزرار */}
+          {/* زرار التكبير على اليمين بعيد عن الأزرار - Larger for big screens */}
           <button
             onClick={toggleFullScreen}
-            className="flex-shrink-0 bg-gray-700 hover:bg-[#f37121] text-white p-2 rounded-lg shadow-md transition-all duration-200 border border-gray-600 flex items-center gap-2"
+            className={`flex-shrink-0 bg-gray-700 hover:bg-[#f37121] text-white rounded-lg shadow-md transition-all duration-200 border border-gray-600 flex items-center gap-2 ${
+              isFullScreen ? 'p-3 sm:p-4' : 'p-2'
+            }`}
             title="Toggle Fullscreen"
           >
-            {isFullScreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-            <span className="text-xs hidden sm:inline">
+            {isFullScreen ? (
+              <Minimize2 size={isFullScreen ? 20 : 14} />
+            ) : (
+              <Maximize2 size={14} />
+            )}
+            <span className={`hidden sm:inline ${
+              isFullScreen ? 'text-base sm:text-lg md:text-xl' : 'text-xs'
+            }`}>
               {isFullScreen ? 'Exit' : 'Fullscreen'}
             </span>
           </button>
         </div>
 
-        {/* معلومات الغرفة للشاشات الصغيرة */}
-        <div className="sm:hidden flex items-center gap-2 mt-2">
-          <div className={`w-2 h-2 rounded-full ${
+        {/* معلومات الغرفة للشاشات الصغيرة - Larger for big screens */}
+        <div className={`sm:hidden flex items-center gap-2 ${
+          isFullScreen ? 'mt-3 px-4' : 'mt-2'
+        }`}>
+          <div className={`rounded-full ${
+            isFullScreen ? 'w-3 h-3' : 'w-2 h-2'
+          } ${
             selectedRoomType === 'small' ? 'bg-green-500' : 
             selectedRoomType === 'large' ? 'bg-blue-500' : 'bg-[#f37121]'
           }`}></div>
-          <span className="text-xs text-gray-300">
+          <span className={`text-gray-300 ${
+            isFullScreen ? 'text-base sm:text-lg' : 'text-xs'
+          }`}>
             {getRoomInfoText()}
           </span>
         </div>
       </div>
 
-      {/* Grid */}
-      <div className="flex-1 min-h-0 p-3">
-        <div className="h-full grid grid-rows-4 gap-2"> {/* 4 rows */}
+      {/* Grid - Larger padding and text for big screens */}
+      <div className={`flex-1 min-h-0 ${
+        isFullScreen ? 'p-4 sm:p-6 md:p-8' : 'p-3'
+      }`}>
+        <div className="h-full grid grid-rows-4 gap-2 sm:gap-3 md:gap-4"> {/* 4 rows */}
           {rows.map((rowHours, rowIndex) => (
-            <div key={rowIndex} className="grid grid-cols-4 gap-2 h-full"> {/* 4 columns */}
+            <div key={rowIndex} className="grid grid-cols-4 gap-2 sm:gap-3 md:gap-4 h-full"> {/* 4 columns */}
               {rowHours.map(hour => {
                 const hourBookings = getBookingsForHour(hour);
                 const hasBookings = hourBookings.length > 0;
@@ -1044,37 +1096,49 @@ export default function FullScreenScheduleGrid({
                 return (
                   <div
                     key={hour}
-                    className="bg-gray-700 rounded border border-gray-600 p-1 flex flex-col h-full relative"
+                    className={`bg-gray-700 rounded border-2 border-gray-600 flex flex-col h-full relative ${
+                      isFullScreen ? 'p-2 sm:p-3 md:p-4' : 'p-1'
+                    }`}
                   >
-                    {/* Time Header */}
-                    <div className="text-center mb-1 shrink-0 z-10">
-                      <div className="text-sm font-bold text-white mt-1 bg-gray-700 px-2 py-1 rounded">
+                    {/* Time Header - Larger for big screens */}
+                    <div className={`text-center shrink-0 z-10 ${
+                      isFullScreen ? 'mb-2' : 'mb-1'
+                    }`}>
+                      <div className={`font-bold text-white bg-gray-700 px-2 py-1 rounded ${
+                        isFullScreen ? 'text-base sm:text-lg md:text-xl' : 'text-sm'
+                      }`}>
                         {formatHour(hour)}
                       </div>
                     </div>
 
-                    {/* Bookings Container */}
-                    <div className="flex-1 min-h-0 overflow-y-auto space-y-1 relative">
+                    {/* Bookings Container - Full height for big screens */}
+                    <div className="flex-1 min-h-0 overflow-hidden relative">
                       {hasBookings ? (
-                        <div className="space-y-1">
-                          {hourBookings.map(booking => (
-                            <div
-                              key={`${booking._id}-${hour}`}
-                              className="transform  transition-transform duration-200"
-                            >
-                              <BookingCard
-                                booking={booking}
-                                compact={true}
-                              />
-                            </div>
-                          ))}
-                        </div>
+                        hourBookings.map(booking => (
+                          <div
+                            key={`${booking._id}-${hour}`}
+                            className="absolute inset-0 h-full w-full"
+                          >
+                            <BookingCard
+                              booking={booking}
+                              compact={true}
+                            />
+                          </div>
+                        ))
                       ) : (
-                        // Available State - تأكد من ظهوره دائماً
-                        <div className="h-full flex flex-col items-center justify-center text-gray-400 text-xs border-2 border-dashed border-gray-600 rounded px-1 py-4 min-h-[80px] bg-gray-600/20">
+                        // Available State - Larger text for big screens
+                        <div className={`h-full w-full flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-600 rounded bg-gray-600/20 ${
+                          isFullScreen ? 'px-2 py-4' : 'px-1 py-4'
+                        }`}>
                           <div className="text-center">
-                            <div className="mb-1 font-medium">Available</div>
-                            <div className="text-[10px] text-gray-500">
+                            <div className={`font-bold ${
+                              isFullScreen ? 'text-base sm:text-lg md:text-xl mb-1' : 'text-xs mb-1'
+                            }`}>
+                              Available
+                            </div>
+                            <div className={`text-gray-500 ${
+                              isFullScreen ? 'text-sm sm:text-base' : 'text-[10px]'
+                            }`}>
                               {selectedRoomType === 'both' ? 'Both Rooms' : 
                                selectedRoomType === 'small' ? 'Small Room' : 'Large Room'}
                             </div>

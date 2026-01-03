@@ -95,6 +95,48 @@ export default function BookingCard({ booking, compact = false }: BookingCardPro
   };
 
   if (compact) {
+    // Check if we're in fullscreen mode (for large display screens)
+    const isFullscreen = typeof document !== 'undefined' && !!document.fullscreenElement;
+    
+    // Original design - only use absolute in fullscreen for display page
+    if (isFullscreen) {
+      // FullScreen mode - larger for display screens
+      return (
+        <div className={`bg-gradient-to-br ${getRoomTypeColor(booking.roomType)} border rounded-lg p-1 text-xs backdrop-blur-sm hover:opacity-90 transition-all duration-300 shadow-sm h-full w-full absolute inset-0 flex flex-col`}>
+          <div className="flex items-start justify-between gap-1 flex-1 min-h-0">
+            <div className="flex-1 min-w-0 flex flex-col justify-center h-full overflow-hidden">
+              <div className="text-gray-200 truncate text-[10px] leading-tight font-medium">
+                {booking.contactPerson.company}
+              </div>
+              <div className="text-gray-300 truncate text-[9px] leading-tight">
+                {booking.contactPerson.name}
+              </div>
+              <div className={`text-[8px] ${getRoomTypeText(booking.roomType)} mt-0.5 font-medium`}>
+                {booking.roomName || (booking.roomType === 'small' ? 'Small' : 'Large')}
+              </div>
+            </div>
+            <div className="text-gray-300 text-[9px] leading-tight whitespace-nowrap flex flex-col items-end flex-shrink-0">
+              <span>{formatTime(booking.startTime)}</span>
+              <span>{formatTime(booking.endTime)}</span>
+            </div>
+          </div>
+          
+          {/* Attendees Info */}
+          <div className="flex justify-between items-center mt-1 pt-1 border-t border-gray-400/20 flex-shrink-0">
+            <span className="text-[8px] text-gray-300">
+              {booking.numberOfAttendees} people
+            </span>
+            <span className={`text-[8px] px-1 rounded ${
+              booking.status === 'confirmed' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
+            }`}>
+              {booking.status}
+            </span>
+          </div>
+        </div>
+      );
+    }
+    
+    // Normal mode - original compact design
     return (
       <div className={`bg-gradient-to-br ${getRoomTypeColor(booking.roomType)} border rounded-lg p-1 text-xs backdrop-blur-sm hover:opacity-90 transition-all duration-300 shadow-sm`}>
         <div className="flex items-start justify-between gap-1">

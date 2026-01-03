@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { User } from "../types";
+import { User } from "../../types";
 import { adminAPI } from "../utils/api";
+import ConfirmDialog from "../components/ConfirmDialog";
+import { toast as hotToast } from "react-hot-toast";
 
 type ToastType = "success" | "error" | "info";
 
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(false);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -28,11 +31,17 @@ export default function UserManagement() {
     largeRoom: false,
   });
 
-  const [toast, setToast] = useState<{ type: ToastType; msg: string } | null>(null);
+  const [toast, setToast] = useState<{ type: ToastType; msg: string } | null>(
+    null
+  );
 
   const [creating, setCreating] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [updatingPerm, setUpdatingPerm] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; userId: string | null }>({
+    isOpen: false,
+    userId: null
+  });
 
   const showToast = (type: ToastType, msg: string) => {
     setToast({ type, msg });
@@ -53,11 +62,29 @@ export default function UserManagement() {
 
   const loadUsers = async () => {
     try {
+      // التحقق من وجود token قبل المحاولة
+      const token =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      if (!token) {
+        setAuthError(true);
+        setLoading(false);
+        return;
+      }
+
       const result = await adminAPI.getAllUsers();
       const list = result?.data?.users || [];
       setUsers(list);
+      setAuthError(false);
     } catch (err: any) {
-      showToast("error", err?.message || "Failed to load users");
+      // إذا كان الخطأ متعلق بالمصادقة، نعرض رسالة مناسبة
+      if (
+        err?.message?.includes("not logged in") ||
+        err?.message?.includes("401")
+      ) {
+        setAuthError(true);
+      } else {
+        showToast("error", err?.message || "Failed to load users");
+      }
     } finally {
       setLoading(false);
     }
@@ -78,62 +105,70 @@ export default function UserManagement() {
 
   const getPermissionsColor = (user: User) => {
     const p = user.bookingPermissions || { smallRoom: true, largeRoom: false };
-    if (p.smallRoom && p.largeRoom) return "bg-purple-900/50 text-purple-300 border-purple-700/50";
-    if (p.smallRoom) return "bg-green-900/50 text-green-300 border-green-700/50";
+    if (p.smallRoom && p.largeRoom)
+      return "bg-purple-900/50 text-purple-300 border-purple-700/50";
+    if (p.smallRoom)
+      return "bg-green-900/50 text-green-300 border-green-700/50";
     if (p.largeRoom) return "bg-blue-900/50 text-blue-300 border-blue-700/50";
     return "bg-red-900/50 text-red-300 border-red-700/50";
   };
 
-  // ✅ هنا الإصلاح الحقيقي: نقفل المودال فورًا (Optimistic) + نضيف اليوزر فورًا لو رجع
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (creating) return;
 
     setCreating(true);
 
-    // ✅ اقفل فورًا (زي ما انت عايز)
-    setShowCreateModal(false);
-
-    // Optional: Toast "creating..."
-    showToast("info", "Creating user...");
-
     try {
       const result = await adminAPI.createUser(formData);
 
-      const createdUser: User | undefined = result?.data?.user;
-
-      if (createdUser) {
-        setUsers((prev) => {
-          // منع تكرار لو حصل loadUsers بعدين
-          const exists = prev.some((x) => uidOf(x) === uidOf(createdUser));
-          if (exists) return prev;
-          return [createdUser, ...prev];
-        });
-      } else {
-        // fallback
-        await loadUsers();
-      }
-
+      // ✅ إغلاق المودال فورًا بعد نجاح الإنشاء
+      setShowCreateModal(false);
       resetForm();
+      setCreating(false);
 
-      if (result?.data?.emailSent === true) {
-        showToast("success", "User created ✅ Email sent");
-      } else if (result?.data?.emailSent === false) {
-        showToast("info", "User created ✅ لكن الإيميل لم يُرسل (راجع إعدادات الإيميل)");
-      } else {
-        showToast("success", "User created ✅");
+      // إضافة المستخدم للقائمة فورًا (optimistic update)
+      if (result?.data?.user) {
+        setUsers((prev) => {
+          const exists = prev.some((u) => uidOf(u) === uidOf(result.data.user));
+          if (exists) return prev;
+          return [result.data.user, ...prev];
+        });
       }
 
-      // ✅ ضمان 100%: مزامنة نهائية (بدون ما تحتاج refresh)
-      // حتى لو الـ state اتلخبط من أي سبب
-      await loadUsers();
-    } catch (err: any) {
-      showToast("error", err?.message || "Failed to create user");
+      // عرض رسالة النجاح
+      showToast("success", "User created ✅");
 
-      // ✅ لو فشل: افتح المودال تاني عشان مايضيعش عليه البيانات (اختياري)
-      setShowCreateModal(true);
-    } finally {
+      // إعادة تحميل القائمة في الخلفية للتأكد من المزامنة
+      loadUsers().catch((err) => {
+        console.error("Error reloading users:", err);
+      });
+    } catch (err: any) {
       setCreating(false);
+
+      const errorMessage = err?.message || "Failed to create user";
+
+      // رسائل خطأ أوضح
+      if (errorMessage.includes("timeout")) {
+        // في حالة timeout، نغلق المودال ونعيد التحميل (المستخدم قد يكون تم إنشاؤه)
+        setShowCreateModal(false);
+        resetForm();
+        showToast("info", "Checking if user was created...");
+        // إعادة تحميل القائمة للتحقق
+        loadUsers()
+          .then(() => {
+            showToast("success", "User created ✅ (verified after timeout)");
+          })
+          .catch(() => {
+            showToast("error", "Timeout occurred. Please refresh the page.");
+          });
+      } else if (errorMessage.includes("already exists")) {
+        showToast("error", "User with this email already exists");
+        // نترك المودال مفتوحًا في هذه الحالة
+      } else {
+        showToast("error", errorMessage);
+        // نترك المودال مفتوحًا في حالة الخطأ
+      }
     }
   };
 
@@ -144,7 +179,10 @@ export default function UserManagement() {
       password: "",
       fullName: user.fullName,
       role: user.role,
-      bookingPermissions: user.bookingPermissions || { smallRoom: true, largeRoom: false },
+      bookingPermissions: user.bookingPermissions || {
+        smallRoom: true,
+        largeRoom: false,
+      },
     });
     setShowEditModal(true);
   };
@@ -178,7 +216,9 @@ export default function UserManagement() {
 
   const handlePermissions = (user: User) => {
     setSelectedUser(user);
-    setPermissionsData(user.bookingPermissions || { smallRoom: true, largeRoom: false });
+    setPermissionsData(
+      user.bookingPermissions || { smallRoom: true, largeRoom: false }
+    );
     setShowPermissionsModal(true);
   };
 
@@ -208,16 +248,22 @@ export default function UserManagement() {
     }
   };
 
-  const handleDeleteUser = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this user?")) return;
+  const handleDeleteUserClick = (id: string) => {
+    setDeleteConfirm({ isOpen: true, userId: id });
+  };
+
+  const handleDeleteUser = async () => {
+    if (!deleteConfirm.userId) return;
 
     try {
-      await adminAPI.deleteUser(id);
-      setUsers((prev) => prev.filter((u) => uidOf(u) !== id));
-      showToast("success", "User deleted ✅");
+      await adminAPI.deleteUser(deleteConfirm.userId);
+      setUsers((prev) => prev.filter((u) => uidOf(u) !== deleteConfirm.userId));
+      hotToast.success("User deleted successfully");
       await loadUsers();
     } catch (err: any) {
-      showToast("error", err?.message || "Failed to delete user");
+      hotToast.error(err?.message || "Failed to delete user");
+    } finally {
+      setDeleteConfirm({ isOpen: false, userId: null });
     }
   };
 
@@ -225,7 +271,7 @@ export default function UserManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center pt-20 sm:pt-24">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f37121] mx-auto mb-4" />
           <p className="text-gray-400">Loading Users...</p>
@@ -234,8 +280,38 @@ export default function UserManagement() {
     );
   }
 
+  if (authError) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6 pt-20 sm:pt-24">
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl border border-red-700/50 p-8 max-w-md w-full text-center">
+          <div className="text-red-400 text-6xl mb-4">🔒</div>
+          <h2 className="text-2xl font-bold text-red-400 mb-4">
+            Authentication Required
+          </h2>
+          <p className="text-gray-300 mb-6">
+            You need to be logged in as an admin to access this page.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/meeting-room"
+              className="bg-gradient-to-r from-[#f37121] to-orange-500 hover:from-[#e5651a] hover:to-orange-600 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200"
+            >
+              Go to Login
+            </Link>
+            <Link
+              href="/admin-dashboard"
+              className="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200"
+            >
+              Back to Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-gray-900 text-white p-6 pt-20 sm:pt-24">
       {/* Toast */}
       {toast && (
         <div className="fixed top-6 right-6 z-[9999]">
@@ -267,55 +343,70 @@ export default function UserManagement() {
       <div className="fixed inset-0 bg-gradient-to-br from-[#f37121]/10 via-transparent to-[#f37121]/5 blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#f37121] to-orange-500 bg-clip-text text-transparent">
-              User Management
-            </h1>
-            <p className="text-gray-400 mt-2">Manage system users and permissions</p>
-          </div>
+        {/* Header - أصغر وأكثر تنظيماً */}
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg p-4 mb-4 border border-gray-700">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-[#f37121] to-orange-500 bg-clip-text text-transparent">
+                User Management
+              </h1>
+              <p className="text-xs text-gray-400 mt-1">
+                Manage system users and permissions
+              </p>
+            </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="bg-gradient-to-r from-[#f37121] to-orange-500 hover:from-[#e5651a] hover:to-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl border border-orange-400/50"
-            >
-              Create New User
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="bg-gradient-to-r from-[#f37121] to-orange-500 hover:from-[#e5651a] hover:to-orange-600 text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-all border border-orange-400/50"
+              >
+                ➕ Create User
+              </button>
 
-            <button
-              onClick={loadUsers}
-              className="bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-lg border border-gray-700"
-            >
-              Refresh
-            </button>
+              <button
+                onClick={loadUsers}
+                className="bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-all border border-gray-600"
+              >
+                🔄 Refresh
+              </button>
 
-            <Link
-              href="/admin-dashboard"
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl border border-blue-500/50 text-center"
-            >
-              Back to Dashboard
-            </Link>
+              <Link
+                href="/admin-dashboard"
+                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-all border border-blue-500/50 text-center"
+              >
+                ← Dashboard
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-xl overflow-hidden border border-gray-700">
-          <div className="px-6 py-4 border-b border-gray-700 bg-gray-800/50 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-[#f37121]">All Users ({totalUsers})</h2>
-            <span className="text-xs text-gray-400">Updates instantly (no refresh)</span>
+        {/* Table - أصغر */}
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg overflow-hidden border border-gray-700">
+          <div className="px-4 py-3 border-b border-gray-700 bg-gray-800/50 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-[#f37121]">
+              All Users ({totalUsers})
+            </h2>
           </div>
 
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-700">
               <thead className="bg-gray-800/80">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Role</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Booking Permissions</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">
+                    User
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">
+                    Role
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">
+                    Email
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">
+                    Permissions
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase">
+                    Actions
+                  </th>
                 </tr>
               </thead>
 
@@ -323,14 +414,19 @@ export default function UserManagement() {
                 {users.map((user) => {
                   const id = uidOf(user);
                   return (
-                    <tr key={id} className="hover:bg-gray-700/50 transition-colors duration-200">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-white">{user.fullName}</div>
+                    <tr
+                      key={id}
+                      className="hover:bg-gray-700/50 transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="text-sm font-medium text-white">
+                          {user.fullName}
+                        </div>
                       </td>
 
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-3">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          className={`px-2 py-0.5 inline-flex text-xs font-medium rounded ${
                             user.role === "admin"
                               ? "bg-purple-900/50 text-purple-300 border border-purple-700/50"
                               : "bg-blue-900/50 text-blue-300 border border-blue-700/50"
@@ -340,35 +436,43 @@ export default function UserManagement() {
                         </span>
                       </td>
 
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-300">{user.email}</div>
+                      <td className="px-4 py-3">
+                        <div className="text-sm text-gray-300">
+                          {user.email}
+                        </div>
                       </td>
 
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getPermissionsColor(user)}`}>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`px-2 py-0.5 inline-flex text-xs font-medium rounded ${getPermissionsColor(
+                            user
+                          )}`}
+                        >
                           {getPermissionsText(user)}
                         </span>
                       </td>
 
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => handleEditUser(user)}
-                          className="text-[#f37121] hover:text-orange-400 mr-3 transition-colors duration-200"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handlePermissions(user)}
-                          className="text-green-400 hover:text-green-300 mr-3 transition-colors duration-200"
-                        >
-                          Permissions
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(id)}
-                          className="text-red-400 hover:text-red-300 transition-colors duration-200"
-                        >
-                          Delete
-                        </button>
+                      <td className="px-4 py-3 text-sm">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditUser(user)}
+                            className="text-[#f37121] hover:text-orange-400 transition-colors text-xs"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handlePermissions(user)}
+                            className="text-green-400 hover:text-green-300 transition-colors text-xs"
+                          >
+                            Perms
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUserClick(id)}
+                            className="text-red-400 hover:text-red-300 transition-colors text-xs"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -376,7 +480,10 @@ export default function UserManagement() {
 
                 {users.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-10 text-center text-gray-400">
+                    <td
+                      colSpan={5}
+                      className="px-6 py-10 text-center text-gray-400"
+                    >
                       No users found.
                     </td>
                   </tr>
@@ -387,80 +494,294 @@ export default function UserManagement() {
         </div>
       </div>
 
-      {/* Create Modal (smaller + nicer) */}
+      {/* Create Modal - أصغر */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl border border-gray-700 w-full max-w-sm">
-            <div className="flex justify-between items-center p-5 border-b border-gray-700">
-              <h2 className="text-lg font-bold bg-gradient-to-r from-[#f37121] to-orange-500 bg-clip-text text-transparent">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl border border-gray-700 w-full max-w-sm">
+            <div className="flex justify-between items-center p-4 border-b border-gray-700">
+              <h2 className="text-base font-bold bg-gradient-to-r from-[#f37121] to-orange-500 bg-clip-text text-transparent">
                 Create New User
               </h2>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-[#f37121] text-2xl font-bold transition-colors duration-200"
+                className="text-gray-400 hover:text-[#f37121] text-xl font-bold transition-colors"
                 aria-label="Close"
               >
                 ×
               </button>
             </div>
 
-            <form onSubmit={handleCreateUser} className="p-5 space-y-3">
+            <form onSubmit={handleCreateUser} className="p-4 space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
+                <label
+                  htmlFor="create-fullName"
+                  className="block text-xs font-medium text-gray-300 mb-1"
+                >
+                  Full Name
+                </label>
                 <input
+                  id="create-fullName"
                   type="text"
                   value={formData.fullName}
-                  onChange={(e) => setFormData((p) => ({ ...p, fullName: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, fullName: e.target.value }))
+                  }
+                  className="w-full px-2 py-1.5 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
                   required
+                  placeholder="Enter full name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <label
+                  htmlFor="create-email"
+                  className="block text-xs font-medium text-gray-300 mb-1"
+                >
+                  Email
+                </label>
                 <input
+                  id="create-email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, email: e.target.value }))
+                  }
+                  className="w-full px-2 py-1.5 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
                   required
+                  placeholder="Enter email"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                <label
+                  htmlFor="create-password"
+                  className="block text-xs font-medium text-gray-300 mb-1"
+                >
+                  Password
+                </label>
                 <input
+                  id="create-password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) => setFormData((p) => ({ ...p, password: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, password: e.target.value }))
+                  }
+                  className="w-full px-2 py-1.5 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
                   required
+                  placeholder="Enter password"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Role</label>
+                <label
+                  htmlFor="create-role"
+                  className="block text-xs font-medium text-gray-300 mb-1"
+                >
+                  Role
+                </label>
                 <select
+                  id="create-role"
                   value={formData.role}
-                  onChange={(e) => setFormData((p) => ({ ...p, role: e.target.value as "user" | "admin" }))}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
+                  onChange={(e) =>
+                    setFormData((p) => ({
+                      ...p,
+                      role: e.target.value as "user" | "admin",
+                    }))
+                  }
+                  className="w-full px-2 py-1.5 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
+                  title="Select user role"
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
 
-              <div className="border-t border-gray-700 pt-3">
-                <p className="text-sm font-semibold text-[#f37121] mb-2">Booking Permissions</p>
+              <div className="border-t border-gray-700 pt-2">
+                <p className="text-xs font-semibold text-[#f37121] mb-2">
+                  Booking Permissions
+                </p>
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-2 text-xs text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={formData.bookingPermissions.smallRoom}
+                      onChange={(e) =>
+                        setFormData((p) => ({
+                          ...p,
+                          bookingPermissions: {
+                            ...p.bookingPermissions,
+                            smallRoom: e.target.checked,
+                          },
+                        }))
+                      }
+                      className="w-3.5 h-3.5"
+                    />
+                    Small Room
+                  </label>
+                  <label className="flex items-center gap-2 text-xs text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={formData.bookingPermissions.largeRoom}
+                      onChange={(e) =>
+                        setFormData((p) => ({
+                          ...p,
+                          bookingPermissions: {
+                            ...p.bookingPermissions,
+                            largeRoom: e.target.checked,
+                          },
+                        }))
+                      }
+                      className="w-3.5 h-3.5"
+                    />
+                    Large Room
+                  </label>
+                </div>
+              </div>
 
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="flex-1 bg-gradient-to-r from-[#f37121] to-orange-500 hover:from-[#e5651a] hover:to-orange-600 disabled:opacity-60 text-white text-sm font-medium py-2 px-3 rounded-lg transition-all"
+                >
+                  {creating ? "Creating..." : "Create"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium py-2 px-3 rounded-lg transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal - أصغر */}
+      {showEditModal && selectedUser && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl border border-gray-700 w-full max-w-sm">
+            <div className="flex justify-between items-center p-4 border-b border-gray-700">
+              <h2 className="text-base font-bold bg-gradient-to-r from-[#f37121] to-orange-500 bg-clip-text text-transparent">
+                Edit User
+              </h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-[#f37121] text-xl font-bold transition-colors"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateUser} className="p-4 space-y-3">
+              <div>
+                <label
+                  htmlFor="edit-fullName"
+                  className="block text-xs font-medium text-gray-300 mb-1"
+                >
+                  Full Name
+                </label>
+                <input
+                  id="edit-fullName"
+                  type="text"
+                  value={formData.fullName}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, fullName: e.target.value }))
+                  }
+                  className="w-full px-2 py-1.5 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
+                  required
+                  placeholder="Enter full name"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="edit-email"
+                  className="block text-xs font-medium text-gray-300 mb-1"
+                >
+                  Email
+                </label>
+                <input
+                  id="edit-email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, email: e.target.value }))
+                  }
+                  className="w-full px-2 py-1.5 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
+                  required
+                  placeholder="Enter email"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="edit-password"
+                  className="block text-xs font-medium text-gray-300 mb-1"
+                >
+                  New Password (optional)
+                </label>
+                <input
+                  id="edit-password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, password: e.target.value }))
+                  }
+                  className="w-full px-2 py-1.5 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
+                  placeholder="Leave empty to keep current"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="submit"
+                  disabled={updating}
+                  className="flex-1 bg-gradient-to-r from-[#f37121] to-orange-500 hover:from-[#e5651a] hover:to-orange-600 disabled:opacity-60 text-white text-sm font-medium py-2 px-3 rounded-lg transition-all"
+                >
+                  {updating ? "Updating..." : "Update"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium py-2 px-3 rounded-lg transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Permissions Modal - أصغر */}
+      {showPermissionsModal && selectedUser && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl border border-gray-700 w-full max-w-sm">
+            <div className="flex justify-between items-center p-4 border-b border-gray-700">
+              <h2 className="text-base font-bold bg-gradient-to-r from-[#f37121] to-orange-500 bg-clip-text text-transparent">
+                Permissions
+              </h2>
+              <button
+                onClick={() => setShowPermissionsModal(false)}
+                className="text-gray-400 hover:text-[#f37121] text-xl font-bold transition-colors"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdatePermissions} className="p-4 space-y-3">
+              <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm text-gray-300">
                   <input
                     type="checkbox"
-                    checked={formData.bookingPermissions.smallRoom}
+                    checked={permissionsData.smallRoom}
                     onChange={(e) =>
-                      setFormData((p) => ({
+                      setPermissionsData((p) => ({
                         ...p,
-                        bookingPermissions: { ...p.bookingPermissions, smallRoom: e.target.checked },
+                        smallRoom: e.target.checked,
                       }))
                     }
                     className="w-4 h-4"
@@ -468,14 +789,14 @@ export default function UserManagement() {
                   Small Room Access
                 </label>
 
-                <label className="flex items-center gap-2 text-sm text-gray-300 mt-2">
+                <label className="flex items-center gap-2 text-sm text-gray-300">
                   <input
                     type="checkbox"
-                    checked={formData.bookingPermissions.largeRoom}
+                    checked={permissionsData.largeRoom}
                     onChange={(e) =>
-                      setFormData((p) => ({
+                      setPermissionsData((p) => ({
                         ...p,
-                        bookingPermissions: { ...p.bookingPermissions, largeRoom: e.target.checked },
+                        largeRoom: e.target.checked,
                       }))
                     }
                     className="w-4 h-4"
@@ -484,149 +805,18 @@ export default function UserManagement() {
                 </label>
               </div>
 
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="submit"
-                  disabled={creating}
-                  className="flex-1 bg-gradient-to-r from-[#f37121] to-orange-500 hover:from-[#e5651a] hover:to-orange-600 disabled:opacity-60 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200"
-                >
-                  {creating ? "Creating..." : "Create"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit & Permissions مودالات بتوعك زي ما كانوا — لو عايز أصغّرهم كمان قولي */}
-      {showEditModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl border border-gray-700 w-full max-w-sm">
-            <div className="flex justify-between items-center p-5 border-b border-gray-700">
-              <h2 className="text-lg font-bold bg-gradient-to-r from-[#f37121] to-orange-500 bg-clip-text text-transparent">
-                Edit User
-              </h2>
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="text-gray-400 hover:text-[#f37121] text-2xl font-bold transition-colors duration-200"
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateUser} className="p-5 space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
-                <input
-                  type="text"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData((p) => ({ ...p, fullName: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  New Password (leave empty to keep current)
-                </label>
-                <input
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData((p) => ({ ...p, password: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
-                  placeholder="Enter new password"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="submit"
-                  disabled={updating}
-                  className="flex-1 bg-gradient-to-r from-[#f37121] to-orange-500 hover:from-[#e5651a] hover:to-orange-600 disabled:opacity-60 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200"
-                >
-                  {updating ? "Updating..." : "Update"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowEditModal(false)}
-                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {showPermissionsModal && selectedUser && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl border border-gray-700 w-full max-w-sm">
-            <div className="flex justify-between items-center p-5 border-b border-gray-700">
-              <h2 className="text-lg font-bold bg-gradient-to-r from-[#f37121] to-orange-500 bg-clip-text text-transparent">
-                Permissions
-              </h2>
-              <button
-                onClick={() => setShowPermissionsModal(false)}
-                className="text-gray-400 hover:text-[#f37121] text-2xl font-bold transition-colors duration-200"
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdatePermissions} className="p-5 space-y-3">
-              <label className="flex items-center gap-2 text-sm text-gray-300">
-                <input
-                  type="checkbox"
-                  checked={permissionsData.smallRoom}
-                  onChange={(e) => setPermissionsData((p) => ({ ...p, smallRoom: e.target.checked }))}
-                  className="w-4 h-4"
-                />
-                Small Room Access
-              </label>
-
-              <label className="flex items-center gap-2 text-sm text-gray-300">
-                <input
-                  type="checkbox"
-                  checked={permissionsData.largeRoom}
-                  onChange={(e) => setPermissionsData((p) => ({ ...p, largeRoom: e.target.checked }))}
-                  className="w-4 h-4"
-                />
-                Large Room Access
-              </label>
-
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-2 pt-2">
                 <button
                   type="submit"
                   disabled={updatingPerm}
-                  className="flex-1 bg-gradient-to-r from-[#f37121] to-orange-500 hover:from-[#e5651a] hover:to-orange-600 disabled:opacity-60 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200"
+                  className="flex-1 bg-gradient-to-r from-[#f37121] to-orange-500 hover:from-[#e5651a] hover:to-orange-600 disabled:opacity-60 text-white text-sm font-medium py-2 px-3 rounded-lg transition-all"
                 >
                   {updatingPerm ? "Saving..." : "Save"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowPermissionsModal(false)}
-                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200"
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium py-2 px-3 rounded-lg transition-all"
                 >
                   Cancel
                 </button>
@@ -635,6 +825,18 @@ export default function UserManagement() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, userId: null })}
+        onConfirm={handleDeleteUser}
+        title="Delete User"
+        message="Are you sure you want to delete this user? This action cannot be undone."
+        type="danger"
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }

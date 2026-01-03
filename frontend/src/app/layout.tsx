@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import FloatingButtons from '../components/FloatingButtons'
+import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -30,6 +31,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </main>
           <Footer />
           <FloatingButtons />
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#1f2937',
+                color: '#fff',
+                border: '1px solid #374151',
+                borderRadius: '0.75rem',
+                padding: '16px',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
         </div>
       </body>
     </html>

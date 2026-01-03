@@ -224,7 +224,7 @@ export default function BlogHighlights() {
                       });
                     } else {
                       navigator.clipboard.writeText(window.location.href);
-                      alert('Link copied to clipboard!');
+                      toast.success('Link copied to clipboard!');
                     }
                   }}
                   className="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-950 to-red-900 text-white rounded-xl border border-red-700 hover:border-red-500 transition-all duration-300 cursor-pointer"

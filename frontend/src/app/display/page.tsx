@@ -18,25 +18,92 @@ export default function MeetingRoomDisplay() {
   useEffect(() => {
     loadBookings();
     
-    // تحديث البيانات كل 30 ثانية
+    // Real-time updates every 15 seconds for 24/7 display screens
+    // Reduced interval for faster updates on company display screens
     const interval = setInterval(() => {
       loadBookings();
-    }, 3000);
+    }, 15000); // 15 seconds for real-time feel
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
+
+  // Prevent page sleep/standby for 24/7 display screens - Separate effect
+  useEffect(() => {
+    // Keep page active for 24/7 display
+    const keepAlive = setInterval(() => {
+      if (document.hidden === false) {
+        // Update title to keep page active (prevents browser sleep)
+        document.title = `Meeting Room - ${new Date().toLocaleTimeString()}`;
+      }
+    }, 60000); // Every minute
+
+    // Prevent browser sleep with visibility API
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Page is visible, refresh data to keep it active
+        loadBookings();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(keepAlive);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // loadBookings is stable, no need to include it
+
+  // تحديث البيانات عند تغيير التاريخ
+  useEffect(() => {
+    if (bookings.length > 0) {
+      // لا نحتاج لإعادة تحميل كامل، فقط تحديث العرض
+    }
+  }, [selectedDate]);
 
   const loadBookings = async () => {
     try {
-      const result = await bookingsAPI.getAll();
+      // Performance: Don't show loading overlay on auto-refresh
+      const isInitialLoad = bookings.length === 0;
+      if (isInitialLoad) {
+        setLoading(true);
+      }
+      
+      // Optimized timeout for faster performance (5 seconds instead of 10)
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 5000)
+      );
+      
+      const result = await Promise.race([
+        bookingsAPI.getAll(),
+        timeoutPromise
+      ]) as any;
+      
       if (result.status === 'success') {
-        setBookings(result.data.bookings);
+        // Only update if data actually changed to prevent unnecessary re-renders
+        setBookings(prevBookings => {
+          const newBookings = result.data.bookings;
+          // Quick check if data changed
+          if (JSON.stringify(prevBookings) !== JSON.stringify(newBookings)) {
+            return newBookings;
+          }
+          return prevBookings;
+        });
         setLastUpdate(new Date());
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching bookings:', error);
+      // On error, don't stop loading if we have existing data (for 24/7 display)
+      if (bookings.length === 0) {
+        setLoading(false);
+      }
+      // Continue trying - don't break the 24/7 display
     } finally {
-      setLoading(false);
+      if (bookings.length === 0) {
+        setLoading(false);
+      }
     }
   };
 
@@ -69,12 +136,33 @@ export default function MeetingRoomDisplay() {
     setSelectedDate(new Date());
   };
 
-  return (
-    <div className="mt-20 relative min-h-screen bg-gray-900 text-white flex flex-col">
+  // Prevent page sleep/standby for 24/7 display screens
+  useEffect(() => {
+    // Keep page active for 24/7 display
+    const keepAlive = setInterval(() => {
+      if (document.hidden === false) {
+        // Update title to keep page active
+        document.title = `Meeting Room - ${new Date().toLocaleTimeString()}`;
+      }
+    }, 60000); // Every minute
 
-      {/* 🔥🔥🔥 Loading Overlay بدل الشاشة السودة */}
-      {loading && (
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+    // Prevent browser sleep with visibility API
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        // Page is visible, ensure it stays active
+        loadBookings();
+      }
+    });
+
+    return () => clearInterval(keepAlive);
+  }, []);
+
+  return (
+    <div className="pt-20 sm:pt-24 relative min-h-screen bg-gray-900 text-white flex flex-col">
+
+      {/* Loading Overlay - يظهر فقط عند التحميل الأولي */}
+      {loading && bookings.length === 0 && (
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f37121] mx-auto mb-4"></div>
             <p className="text-gray-300">Loading Meeting Room Schedule...</p>
@@ -162,7 +250,7 @@ export default function MeetingRoomDisplay() {
             </div>
             
             {/* Book Meeting Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
               <Link 
                 href="/meeting-room"
                 className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#f37121] to-orange-500 hover:from-[#e5651a] hover:to-orange-600 text-white font-medium rounded-lg transition-all duration-200 text-sm whitespace-nowrap"
@@ -176,7 +264,7 @@ export default function MeetingRoomDisplay() {
       </div>
 
       {/* FullScreen Schedule Grid */}
-      <div className="flex-1 min-h-0 p-4">
+      <div className="flex-1 min-h-0 p-2 sm:p-4">
         <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 overflow-hidden h-full">
           <FullScreenScheduleGrid 
             bookings={bookings} 
@@ -213,7 +301,7 @@ export default function MeetingRoomDisplay() {
             
             <div className="flex items-center gap-2 text-xs text-gray-400">
               <Monitor className="w-3 h-3" />
-              <span>Auto updates every 30 seconds</span>
+              <span>Real-time updates every 15 seconds</span>
             </div>
           </div>
         </div>

@@ -21,7 +21,10 @@ import {
   getAllBookings, 
   createBooking, 
   getAvailableSlots,
-  getAvailableRoomTypes  // إضافة الدالة الجديدة
+  getAvailableRoomTypes,
+  getMyBookings,
+  updateMyBooking,
+  deleteMyBooking
 } from '../controllers/bookingController.js';
 import { protect } from '../middleware/auth.js';
 
@@ -32,6 +35,11 @@ router.use(protect); // All booking routes require authentication
 router.get('/', getAllBookings);
 router.post('/', createBooking);
 router.get('/available', getAvailableSlots);
-router.get('/available-rooms', getAvailableRoomTypes); // Route جديد
+router.get('/available-rooms', getAvailableRoomTypes);
+
+// Routes للمستخدمين لإدارة حجوزاتهم الخاصة
+router.get('/my-bookings', getMyBookings);
+router.patch('/my-bookings/:id', updateMyBooking);
+router.delete('/my-bookings/:id', deleteMyBooking);
 
 export default router;

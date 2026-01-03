@@ -7,8 +7,10 @@ import sendEmail from '../../utils/sendEmail.js';
 // Get all users (admin only)
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password');
-
+    // const users = await User.find().select('-password');
+const users = await User.find().select('-password').sort({ _id: -1 });
+    
+    res.set('Cache-Control', 'no-store');
     res.status(200).json({
       status: 'success',
       results: users.length,
@@ -24,72 +26,7 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// Create new user (admin only)
-// export const createUser = async (req, res) => {
-//   try {
-//     const { email, password, fullName, role, bookingPermissions } = req.body;
 
-//     // 1️⃣ Check if user already exists
-//     // const existingUser = await User.findOne({ email });
-//     const existingUser = await User.findOne({ email: email.toLowerCase().trim() });
-//     if (existingUser) {
-//       return res.status(400).json({
-//         status: 'fail',
-//         message: 'User with this email already exists'
-//       });
-//     }
-
-//     // 2️⃣ Create new user
-//     const newUser = await User.create({
-//       email,
-//       password,
-//       fullName,
-//       role: role || 'user',
-//       bookingPermissions: bookingPermissions || {
-//         smallRoom: true,
-//         largeRoom: false
-//       }
-//     });
-
-//     // 3️⃣ Send email to user
-//     const bookingLink = `${process.env.FRONTEND_URL}/meeting-room`;
-
-//     await sendEmail({
-//       to: email,
-//       subject: 'Your Meeting Room Access',
-//       html: `
-//         <h2>Welcome ${fullName}</h2>
-//         <p>Your account has been created by the admin.</p>
-//         <p><strong>Email:</strong> ${email}</p>
-//         <p><strong>Password:</strong> ${password}</p>
-//         <p>
-//           <a href="${bookingLink}" target="_blank">
-//             Click here to book a meeting room
-//           </a>
-//         </p>
-//       `
-//     });
-
-//     // 4️⃣ Return user without password
-//     const userResponse = await User.findById(newUser._id).select('-password');
-
-//     res.status(201).json({
-//       status: 'success',
-//       data: {
-//         user: userResponse
-//       }
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       status: 'error',
-//       message: err.message
-//     });
-//   }
-// };
-
-import User from '../models/User.js';
-import bcrypt from 'bcryptjs';
-import sendEmail from '../../utils/sendEmail.js';
 
 // Create new user (admin only)
 export const createUser = async (req, res) => {
@@ -114,7 +51,7 @@ export const createUser = async (req, res) => {
       });
     }
 
-    // 2) Create user
+    // 2) Create user مع تعيين mustChangePassword = true
     const newUser = await User.create({
       email: normalizedEmail,
       password,
@@ -123,49 +60,131 @@ export const createUser = async (req, res) => {
       bookingPermissions: bookingPermissions || {
         smallRoom: true,
         largeRoom: false
-      }
+      },
+      mustChangePassword: true // المستخدم الجديد يجب أن يغير الباسورد
     });
 
-    // 3) Prepare email
-    const bookingLink = `${process.env.FRONTEND_URL}/meeting-room`;
+    // التحقق من أن mustChangePassword تم تعيينه بشكل صحيح
+    console.log(`✅ User created: ${normalizedEmail}`);
+    console.log(`✅ mustChangePassword after create: ${newUser.mustChangePassword}`);
+    console.log(`✅ mustChangePassword type: ${typeof newUser.mustChangePassword}`);
+    
+    // إعادة جلب المستخدم من الـ database للتأكد من الحفظ
+    const savedUser = await User.findById(newUser._id);
+    console.log(`✅ mustChangePassword from DB: ${savedUser.mustChangePassword}`);
+    console.log(`✅ mustChangePassword type from DB: ${typeof savedUser.mustChangePassword}`);
 
-    // 4) Try send email لكن بدون ما نكسر الـ API لو فشل
-    let emailSent = false;
-    try {
-      await sendEmail({
-        to: normalizedEmail,
-        subject: 'Your Meeting Room Access',
-        html: `
-          <h2>Welcome ${fullName}</h2>
-          <p>Your account has been created by the admin.</p>
-          <p><strong>Email:</strong> ${normalizedEmail}</p>
-          <p><strong>Password:</strong> ${password}</p>
-          <p>
-            <a href="${bookingLink}" target="_blank" rel="noreferrer">
-              Click here to book a meeting room
-            </a>
-          </p>
-        `
-      });
-      emailSent = true;
-    } catch (mailErr) {
-      // مهم: نسجل الخطأ بس منرجعش 500
-      console.error('❌ Email sending failed:', mailErr?.message || mailErr);
-    }
+    // 3) إعداد الرد فورًا بدون استدعاء إضافي للـ database
+    const userResponse = {
+      _id: newUser._id,
+      email: newUser.email,
+      fullName: newUser.fullName,
+      role: newUser.role,
+      bookingPermissions: newUser.bookingPermissions,
+      mustChangePassword: newUser.mustChangePassword,
+      createdAt: newUser.createdAt,
+      updatedAt: newUser.updatedAt
+    };
 
-    // 5) Return user without password
-    const userResponse = await User.findById(newUser._id).select('-password');
-
-    return res.status(201).json({
+    // 4) التحقق من وجود إعدادات الإيميل
+    const hasEmailConfig = !!(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+    
+    // إرسال الرد فورًا بدون انتظار الإيميل
+    const responseData = {
       status: 'success',
-      message: emailSent
-        ? 'User created and email sent'
-        : 'User created but email was NOT sent (check email config)',
+      message: 'User created successfully',
       data: {
         user: userResponse,
-        emailSent
+        emailSent: false, // سنحدثها في الخلفية
+        emailConfigExists: hasEmailConfig
       }
-    });
+    };
+
+    // إرسال الرد فورًا (قبل أي شيء آخر)
+    res.status(201).json(responseData);
+    
+    // تسجيل معلومات الإيميل
+    if (!hasEmailConfig) {
+      console.warn('⚠️ EMAIL_USER or EMAIL_PASS not configured. Email will not be sent.');
+    }
+
+    // 5) إرسال الإيميل في الخلفية (async بدون انتظار)
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const loginLink = `${frontendUrl}/meeting-room`;
+    
+    // إرسال الإيميل مباشرة (بدون setTimeout) لضمان الإرسال
+    (async () => {
+      try {
+        // التحقق من وجود إعدادات الإيميل
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+          console.warn(`⚠️ Cannot send email to ${normalizedEmail}: EMAIL_USER or EMAIL_PASS not configured`);
+          return;
+        }
+
+        console.log(`📧 Preparing to send welcome email to: ${normalizedEmail}`);
+        console.log(`📧 Using email: ${process.env.EMAIL_USER}`);
+        
+        await sendEmail({
+          to: normalizedEmail,
+          subject: 'Your Account Has Been Created - Meeting Room System',
+          html: `
+            <!DOCTYPE html>
+            <html dir="ltr" lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #f37121 0%, #ff6b35 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+                .info-box { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #f37121; }
+                .button { display: inline-block; background: linear-gradient(135deg, #f37121 0%, #ff6b35 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
+                .warning { background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin: 20px 0; }
+                .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1>Welcome ${fullName}!</h1>
+                  <p>Your account has been created successfully</p>
+                </div>
+                <div class="content">
+                  <p>Welcome to the Meeting Room Booking System!</p>
+                  
+                  <div class="info-box">
+                    <h3>Your Account Information:</h3>
+                    <p><strong>Email:</strong> ${normalizedEmail}</p>
+                    <p><strong>Initial Password:</strong> <code style="background: #f0f0f0; padding: 5px 10px; border-radius: 4px; font-size: 16px;">${password}</code></p>
+                  </div>
+
+                  <div class="warning">
+                    <strong>⚠️ Important Notice:</strong>
+                    <p>This is your initial password. You must change it upon first login for security reasons.</p>
+                  </div>
+
+                  <div style="text-align: center; margin: 30px 0;">
+                    <a href="${loginLink}" class="button">Login and Change Password</a>
+                  </div>
+
+                  <p style="margin-top: 30px;">After logging in, you will be automatically redirected to change your password.</p>
+                </div>
+                <div class="footer">
+                  <p>© ${new Date().getFullYear()} Meeting Room System - Energize Global</p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `
+        });
+        console.log(`✅ Email sent successfully to ${normalizedEmail}`);
+      } catch (mailErr) {
+        console.error('❌ Email sending failed:', mailErr?.message || mailErr);
+        console.error('❌ Full error details:', JSON.stringify(mailErr, null, 2));
+        // لا نرمي الخطأ هنا لأن المستخدم تم إنشاؤه بنجاح
+      }
+    })(); // استدعاء فوري للدالة
   } catch (err) {
     return res.status(500).json({
       status: 'error',

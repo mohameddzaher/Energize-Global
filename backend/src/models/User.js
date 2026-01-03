@@ -37,6 +37,11 @@ const userSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     }
+  },
+  // حقل لتحديد إذا كان المستخدم يحتاج لتغيير الباسورد
+  mustChangePassword: {
+    type: Boolean,
+    default: false
   }
 });
 

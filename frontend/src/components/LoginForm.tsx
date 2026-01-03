@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { authAPI } from '../utils/api';
+import ChangePassword from './ChangePassword';
 
 interface LoginFormProps {
   onLogin: () => void;
@@ -10,6 +11,8 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [userData, setUserData] = useState<{ email: string; fullName: string } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,16 +25,68 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       if (result.status === 'success') {
         localStorage.setItem('token', result.token);
         localStorage.setItem('user', JSON.stringify(result.data.user));
-        onLogin();
+        
+        // التحقق من الحاجة لتغيير الباسورد
+        const user = result.data.user;
+        
+        // تحقق شامل من mustChangePassword
+        const mustChangePassword = user.mustChangePassword === true 
+          || user.mustChangePassword === 'true' 
+          || user.mustChangePassword === 1
+          || (user.mustChangePassword !== false && user.mustChangePassword !== undefined && user.mustChangePassword !== null);
+        
+        console.log('🔐 ========== LOGIN SUCCESS ==========');
+        console.log('🔐 Full response:', result);
+        console.log('🔐 User data:', user);
+        console.log('🔐 mustChangePassword value:', user.mustChangePassword);
+        console.log('🔐 mustChangePassword type:', typeof user.mustChangePassword);
+        console.log('🔐 mustChangePassword === true:', user.mustChangePassword === true);
+        console.log('🔐 mustChangePassword == true:', user.mustChangePassword == true);
+        console.log('🔐 mustChangePassword !== false:', user.mustChangePassword !== false);
+        console.log('🔐 mustChangePassword after check:', mustChangePassword);
+        console.log('🔐 Boolean(mustChangePassword):', Boolean(mustChangePassword));
+        
+        if (Boolean(mustChangePassword)) {
+          console.log('🔐 ✅ User MUST change password - showing change password form');
+          setUserData({
+            email: user.email,
+            fullName: user.fullName
+          });
+          setShowChangePassword(true);
+        } else {
+          console.log('🔐 ❌ User can proceed normally - no password change required');
+          onLogin();
+        }
       } else {
         setError(result.message);
       }
-    } catch (err) {
-      setError('Login failed. Please try again.');
+    } catch (err: any) {
+      setError(err?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
+  const handlePasswordChanged = () => {
+    // تحديث بيانات المستخدم بعد تغيير الباسورد
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    user.mustChangePassword = false;
+    localStorage.setItem('user', JSON.stringify(user));
+    
+    setShowChangePassword(false);
+    setUserData(null);
+    onLogin();
+  };
+
+  if (showChangePassword && userData) {
+    return (
+      <ChangePassword
+        onPasswordChanged={handlePasswordChanged}
+        userEmail={userData.email}
+        userName={userData.fullName}
+      />
+    );
+  }
 
   return (
     <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-xl p-8 border border-gray-700">
