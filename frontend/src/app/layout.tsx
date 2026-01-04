@@ -8,9 +8,11 @@ import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://energize-global.com";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://energize-global.com";
 const siteName = "Energize Business Group";
-const siteDescription = "Comprehensive Solutions in Marketing, Event Management, Logistics, and Manufacturing Since 1999. Driving Growth in Saudi Arabia & MENA Region.";
+const siteDescription =
+  "Comprehensive Solutions in Marketing, Event Management, Logistics, and Manufacturing Since 1999. Driving Growth in Saudi Arabia & MENA Region.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -77,9 +79,11 @@ export const metadata: Metadata = {
     icon: [
       { url: "/images/logo.png", type: "image/png" },
       { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", sizes: "any" },
     ],
     apple: [
       { url: "/images/logo.png", type: "image/png" },
+      { url: "/apple-icon.png", sizes: "180x180" },
     ],
   },
   manifest: "/manifest.json",
@@ -105,6 +109,9 @@ export default function RootLayout({
         <meta name="author" content="Energize Business Group" />
         <meta name="geo.region" content="SA" />
         <meta name="geo.placename" content="Saudi Arabia" />
+        {/* Favicon - Explicit links for better browser support */}
+        <link rel="icon" type="image/png" href="/images/logo.png" />
+        <link rel="shortcut icon" type="image/png" href="/images/logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
