@@ -18,7 +18,7 @@ export const companies: Company[] = [
   {
     name: "Energize Events",
     logo: "/images/Energize Event.png",
-    url: "https://events.energize.com",
+    url: "https://energize-events.netlify.app/",
     description: "Premium event management and production",
     industry: "Events"
   },
@@ -38,7 +38,7 @@ export const companies: Company[] = [
   },
   {
     name: "Kit Factory",
-    logo: "/images/kit Factory.png",
+    logo: "/images/Kit Factory.png",
     url: "https://consulting.energize.com",
     description: "Modular construction and building systems",
     industry: "Construction"
@@ -59,9 +59,9 @@ export const companies: Company[] = [
   },
   {
     name: "Little Leaders",
-    logo: "/images/little Leaders.png",
+    logo: "/images/Little Leaders.png",
     url: "https://little-leaders.org/",
-    description: "Nurturing young minds to become tomorrow’s role models",
+    description: "Nurturing young minds to become tomorrow's role models",
     industry: "Education"
   },
   {

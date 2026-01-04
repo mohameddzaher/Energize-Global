@@ -361,10 +361,9 @@ export const bookingsAPI = {
       ? `${API_BASE_URL}/bookings?roomType=${roomType}`
       : `${API_BASE_URL}/bookings`;
 
-      console.log("API_BASE_URL =", API_BASE_URL);
-console.log("Bookings URL =", url);
     const response = await fetch(url, {
       headers: authHeaders(),
+      cache: 'no-store', // Prevent caching for real-time data
     });
 
     const data = await safeJson(response);

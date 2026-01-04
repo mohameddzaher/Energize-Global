@@ -83,16 +83,14 @@ export default function Header({ lang = "en" }: HeaderProps) {
         <div className="flex items-center justify-between h-16 md:h-18">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" legacyBehavior>
-              <a className="flex items-center">
-                <Image
-                  src="/images/Red comma.png"
-                  alt="Energize Business Group Logo"
-                  width={140}
-                  height={40}
-                  className="object-contain transition-all duration-300"
-                />
-              </a>
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/images/Red comma.png"
+                alt="Energize Business Group Logo"
+                width={140}
+                height={40}
+                className="object-contain transition-all duration-300"
+              />
             </Link>
           </div>
 
