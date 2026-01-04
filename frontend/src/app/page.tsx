@@ -1,6 +1,5 @@
-
-
 import { languages, Lang } from "./i18n";
+import type { Metadata } from "next";
 import Header from "../components/Header";
 import Hero from "../components/Hero";
 import About from "../components/About";
@@ -8,9 +7,6 @@ import CompanyCard from "../components/CompanyCard";
 import Stats from "../components/Stats";
 import Values from "../components/Values";
 import Founder from "../components/Founder";
-import ContactCTA from "../components/ContactCTA";
-import Footer from "../components/Footer";
-import Blog from "../components/Blog";
 import Contact from "../components/Contact";
 
 import Newsletter from "../components/Newsletter";
@@ -19,18 +15,28 @@ import LocationMap from "../components/LocationMap";
 
 import { companies } from "../data/companies";
 
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Energize Business Group - Comprehensive Solutions in Marketing, Event Management, Logistics, and Manufacturing Since 1999. Driving Growth in Saudi Arabia & MENA Region.",
+  openGraph: {
+    title: "Energize Business Group",
+    description: "Comprehensive Solutions in Marketing, Event Management, Logistics, and Manufacturing Since 1999",
+    images: ["/images/logo.png"],
+  },
+};
+
 // Helper to merge translations safely
 function getMergedTranslations(lang: Lang) {
   const base = languages.en;
   const current = languages[lang] || {};
   
   // Deep merge function
-  const deepMerge = (target: any, source: any) => {
+  const deepMerge = (target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> => {
     const result = { ...target };
     
     for (const key in source) {
       if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-        result[key] = deepMerge(target[key] || {}, source[key]);
+        result[key] = deepMerge((target[key] as Record<string, unknown>) || {}, source[key] as Record<string, unknown>);
       } else {
         result[key] = source[key] !== undefined ? source[key] : target[key];
       }
@@ -39,10 +45,10 @@ function getMergedTranslations(lang: Lang) {
     return result;
   };
   
-  return deepMerge(base, current);
+  return deepMerge(base as Record<string, unknown>, current as Record<string, unknown>);
 }
 
-export default function Home({ searchParams }: any) {
+export default function Home() {
   // Force English language
   const lang: Lang = "en";
   
@@ -74,15 +80,15 @@ export default function Home({ searchParams }: any) {
       <div className="inline-flex items-center gap-3 mb-4">
         <div className="w-16 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent"></div>
         <span className="text-red-500 text-sm font-bold uppercase tracking-wider">
-          {t.companies?.portfolioTag || "Our Portfolio"}
+          {(t.companies as any)?.portfolioTag || "Our Portfolio"}
         </span>
         <div className="w-16 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent"></div>
       </div>
       <h2 className="text-2xl md:text-2xl font-bold text-gray-900 mb-5">
-        {t.companies?.title || "Our Companies"}
+        {(t.companies as any)?.title || "Our Companies"}
       </h2>
       <p className="text-gray-600 text-base max-w-2xl mx-auto leading-relaxed">
-        {t.companies?.description || "Strategic brands and business units under our management"}
+        {(t.companies as any)?.description || "Strategic brands and business units under our management"}
       </p>
     </div>
     
