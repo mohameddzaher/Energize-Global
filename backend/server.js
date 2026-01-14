@@ -20,7 +20,11 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://elc-ksa.netlify.app'
+    'http://localhost:3001',
+    'https://elc-ksa.netlify.app',
+    'https://www.elc-ksa.com',
+    'https://elc-ksa.com',
+    // Add your custom domain here if different
   ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
