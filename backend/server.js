@@ -22,9 +22,10 @@ app.use(cors({
     'http://localhost:3000',
     'http://localhost:3001',
     'https://elc-ksa.netlify.app',
-    'https://www.elc-ksa.com',
-    'https://elc-ksa.com',
-    // Add your custom domain here if different
+    'https://www.energize-global.com',
+    'https://energize-global.com',
+    'http://www.energize-global.com',
+    'http://energize-global.com',
   ],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
