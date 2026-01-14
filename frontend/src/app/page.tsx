@@ -12,15 +12,16 @@ import Contact from "../components/Contact";
 import Newsletter from "../components/Newsletter";
 import LocationMap from "../components/LocationMap";
 
-
 import { companies } from "../data/companies";
 
 export const metadata: Metadata = {
   title: "Home",
-  description: "Energize Business Group - Comprehensive Solutions in Marketing, Event Management, Logistics, and Manufacturing Since 1999. Driving Growth in Saudi Arabia & MENA Region.",
+  description:
+    "Energize Business Group - Comprehensive Solutions in Marketing, Event Management, Logistics, and Manufacturing Since 1999. Driving Growth in Saudi Arabia & MENA Region.",
   openGraph: {
     title: "Energize Business Group",
-    description: "Comprehensive Solutions in Marketing, Event Management, Logistics, and Manufacturing Since 1999",
+    description:
+      "Comprehensive Solutions in Marketing, Event Management, Logistics, and Manufacturing Since 1999",
     images: ["/images/logo.png"],
   },
 };
@@ -29,32 +30,45 @@ export const metadata: Metadata = {
 function getMergedTranslations(lang: Lang) {
   const base = languages.en;
   const current = languages[lang] || {};
-  
+
   // Deep merge function
-  const deepMerge = (target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> => {
+  const deepMerge = (
+    target: Record<string, unknown>,
+    source: Record<string, unknown>
+  ): Record<string, unknown> => {
     const result = { ...target };
-    
+
     for (const key in source) {
-      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-        result[key] = deepMerge((target[key] as Record<string, unknown>) || {}, source[key] as Record<string, unknown>);
+      if (
+        source[key] &&
+        typeof source[key] === "object" &&
+        !Array.isArray(source[key])
+      ) {
+        result[key] = deepMerge(
+          (target[key] as Record<string, unknown>) || {},
+          source[key] as Record<string, unknown>
+        );
       } else {
         result[key] = source[key] !== undefined ? source[key] : target[key];
       }
     }
-    
+
     return result;
   };
-  
-  return deepMerge(base as Record<string, unknown>, current as Record<string, unknown>);
+
+  return deepMerge(
+    base as Record<string, unknown>,
+    current as Record<string, unknown>
+  );
 }
 
 export default function Home() {
   // Force English language
   const lang: Lang = "en";
-  
+
   // Get merged translations
   const t = getMergedTranslations(lang);
-  
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
       {/* Professional Gradient Background */}
@@ -66,55 +80,59 @@ export default function Home() {
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20"></div>
       </div>
-      
+
       <div className="relative z-10">
         <Header lang={lang} />
         <Hero />
         <About />
         <Stats />
-        
+
         {/* Portfolio Companies Section */}
-<section id="companies" className="py-16 px-4 sm:px-6 bg-white">
-  <div className="max-w-7xl mx-auto">
-    <div className="text-center mb-12">
-      <div className="inline-flex items-center gap-3 mb-4">
-        <div className="w-16 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent"></div>
-        <span className="text-red-500 text-sm font-bold uppercase tracking-wider">
-          {(t.companies as any)?.portfolioTag || "Our Portfolio"}
-        </span>
-        <div className="w-16 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent"></div>
-      </div>
-      <h2 className="text-2xl md:text-2xl font-bold text-gray-900 mb-5">
-        {(t.companies as any)?.title || "Our Companies"}
-      </h2>
-      <p className="text-gray-600 text-base max-w-2xl mx-auto leading-relaxed">
-        {(t.companies as any)?.description || "Strategic brands and business units under our management"}
-      </p>
-    </div>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {companies.map((company, index) => (
-        <CompanyCard
-          key={company.name}
-          name={company.name}
-          logo={company.logo}
-          url={company.url}
-          description={company.description}
-          index={index}
-        />
-      ))}
-    </div>
-  </div>
-</section>
-        
+        <section id="companies" className="py-16 px-4 sm:px-6 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 mb-4">
+                <div className="w-16 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent"></div>
+                <span className="text-red-500 text-sm font-bold uppercase tracking-wider">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {(t.companies as any)?.portfolioTag || "Our Portfolio"}
+                </span>
+                <div className="w-16 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent"></div>
+              </div>
+              <h2 className="text-2xl md:text-2xl font-bold text-gray-900 mb-5">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {(t.companies as any)?.title || "Our Companies"}
+              </h2>
+              <p className="text-gray-600 text-base max-w-2xl mx-auto leading-relaxed">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {(t.companies as any)?.description ||
+                  "Strategic brands and business units under our management"}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {companies.map((company, index) => (
+                <CompanyCard
+                  key={company.name}
+                  name={company.name}
+                  logo={company.logo}
+                  url={company.url}
+                  description={company.description}
+                  index={index}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
         <Values t={t.values} />
         <Founder t={t.founder} />
         {/* <ContactCTA t={t.contact} /> */}
         <Contact />
         <LocationMap />
         {/* <Blog/> */}
-      <Newsletter />
-        
+        <Newsletter />
+
         {/* <Footer lang={lang} /> */}
       </div>
     </main>

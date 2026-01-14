@@ -42,7 +42,7 @@ export default function CompanyCard({
       target="_blank"
       rel="noopener noreferrer"
       className={`group relative p-3 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg border border-gray-700/50 ${BORDER_COLORS[colorIndex]} transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-red-500/15`}
-      style={{ minHeight: '150px' }}
+      style={{ minHeight: "150px" }}
     >
       {/* Glow effect */}
       <div
@@ -96,7 +96,7 @@ export default function CompanyCard({
           </div>
         </div>
       </div>
-      
+
       {/* Corner accent - أصغر */}
       <div className="absolute bottom-1 right-1 w-1 h-1 bg-gradient-to-br from-red-500/30 to-amber-500/20 rounded-full group-hover:scale-150 transition-transform duration-300"></div>
     </a>

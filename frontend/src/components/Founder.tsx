@@ -67,7 +67,7 @@ export default function Founder({ t }: any) {
               {/* Quick Stats - مستطيل أصغر */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="p-2 bg-gradient-to-r from-red-500/20 to-transparent rounded-xl text-center">
-                  <div className="text-base font-bold text-gray-900">25+</div>
+                  <div className="text-base font-bold text-gray-900">29+</div>
                   <div className="text-xs text-gray-600">Years of Experience</div>
                 </div>
                 <div className="p-2 bg-gradient-to-br from-gray-500 to-black rounded-xl text-center">
@@ -152,7 +152,7 @@ export default function Founder({ t }: any) {
             {/* Impact Metrics - مستطيلات أفقية */}
             <div className="grid grid-cols-3 gap-2">
               <div className="text-center p-2 bg-gradient-to-br from-gray-500 to-black rounded-lg  border-gray-800">
-                <div className="text-base font-bold text-white">750+</div>
+                <div className="text-base font-bold text-white">861+</div>
                 <div className="text-xs text-gray-300">Team</div>
               </div>
               <div className="text-center p-2 bg-gradient-to-r from-red-500/20 to-transparent rounded-lg border-red-100">
