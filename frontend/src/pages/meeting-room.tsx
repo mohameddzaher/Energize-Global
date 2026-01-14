@@ -25,9 +25,9 @@ export default function MeetingRoomPage() {
 
   useEffect(() => {
     checkAuth();
-    
+
     // تحميل البيانات فقط إذا كان المستخدم مسجل دخول
-    const token = localStorage.getItem('token');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (token) {
       loadInitialBookings();
     } else {
@@ -56,9 +56,11 @@ export default function MeetingRoomPage() {
   }, [isLoggedIn]);
 
   const checkAuth = () => {
+    if (typeof window === 'undefined') return;
+
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    
+
     if (token && userData) {
       setIsLoggedIn(true);
       setUser(JSON.parse(userData));
@@ -70,7 +72,7 @@ export default function MeetingRoomPage() {
 
   const loadInitialBookings = async () => {
     // التحقق من وجود token قبل المحاولة
-    const token = localStorage.getItem('token');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (!token) {
       setLoading(false);
       return;
@@ -105,7 +107,7 @@ export default function MeetingRoomPage() {
 
   const refreshBookings = async () => {
     // التحقق من وجود token قبل المحاولة
-    const token = localStorage.getItem('token');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (!token) {
       return;
     }
@@ -128,8 +130,10 @@ export default function MeetingRoomPage() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
     setIsLoggedIn(false);
     setUser(null);
     setBookings([]); // مسح البيانات بعد logout
@@ -223,7 +227,7 @@ export default function MeetingRoomPage() {
         {!isLoggedIn && (
           <LoginForm onLogin={() => {
             setIsLoggedIn(true);
-            const userData = localStorage.getItem('user');
+            const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
             if (userData) setUser(JSON.parse(userData));
             refreshBookings();
           }} />

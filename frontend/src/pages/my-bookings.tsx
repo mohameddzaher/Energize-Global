@@ -36,14 +36,16 @@ export default function MyBookingsPage() {
   }, []);
 
   const checkAuth = () => {
+    if (typeof window === 'undefined') return;
+
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    
+
     if (!token || !userData) {
       router.push('/meeting-room');
       return;
     }
-    
+
     setUser(JSON.parse(userData));
   };
 

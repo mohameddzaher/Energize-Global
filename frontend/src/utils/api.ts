@@ -249,20 +249,25 @@ import {
 
 // Determine API base URL - use localhost in development, production URL otherwise
 const getApiBaseUrl = () => {
+  // Always check for environment variable first
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  
-  // In development, try localhost first
-  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-    return "http://localhost:5001/api";
+
+  // Only check window location if we're in the browser
+  if (typeof window !== "undefined") {
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      return "http://localhost:5001/api";
+    }
   }
-  
-  // Production fallback
+
+  // Production fallback (used during SSR/build time)
   return "https://energize-global-backend.onrender.com/api";
 };
 
-const API_BASE_URL = getApiBaseUrl();
+// Don't call getApiBaseUrl at module level - it will be called during build
+// Instead, we'll call it in each function
+const API_BASE_URL = typeof window !== "undefined" ? getApiBaseUrl() : "https://energize-global-backend.onrender.com/api";
 
 /**
  * Safely parse JSON even if backend returns empty body or invalid JSON.
