@@ -27,7 +27,7 @@ export default function LocationMap() {
         "Client Meetings",
         "Regional Hub"
       ],
-      operations: ["Marketing", "Events", "Logistics", "Design"],
+      operations: ["Marketing", "Events", "Logistics", "Kit Factory"],
       employeeCount: "400+",
       mapColor: "from-red-900/90 to-black/80",
       borderColor: "",
@@ -42,7 +42,7 @@ export default function LocationMap() {
         "Strategic Planning",
         "Government Relations"
       ],
-      operations: ["Marketing", "Events", "Logistics", "Design"],
+      operations: ["Marketing", "Events", "Logistics", "Kit Factory"],
       employeeCount: "100+",
       mapColor: "from-blue-900/80 to-blue-800/60",
       borderColor: "",
@@ -57,7 +57,7 @@ export default function LocationMap() {
         "Industrial Services",
         "Energy Sector"
       ],
-      operations: ["Marketing", "Events", "Logistics", "Design"],
+      operations: ["Marketing", "Events", "Logistics", "Kit Factory"],
       employeeCount: "60+",
       mapColor: "from-amber-900/80 to-amber-800/60",
       borderColor: "",
@@ -72,7 +72,7 @@ export default function LocationMap() {
         "Tourism & Hospitality",
         "Agricultural Services"
       ],
-      operations: ["Marketing", "Events", "Logistics", "Design"],
+      operations: ["Marketing", "Events", "Logistics", "Kit Factory"],
       employeeCount: "20+",
       mapColor: "from-emerald-900/80 to-emerald-800/60",
       borderColor: "",
@@ -87,7 +87,7 @@ export default function LocationMap() {
         "Petrochemical Services",
         "Port Logistics"
       ],
-      operations: ["Marketing", "Events", "Logistics", "Design"],
+      operations: ["Marketing", "Events", "Logistics", "Kit Factory"],
       employeeCount: "20+",
       mapColor: "from-indigo-900/80 to-indigo-800/60",
       borderColor: "",
@@ -102,7 +102,7 @@ export default function LocationMap() {
         "GCC Operations",
         "Global Partnerships"
       ],
-      operations: ["Marketing", "Events", "Logistics", "Design"],
+      operations: ["Marketing", "Events", "Logistics", "Kit Factory"],
       employeeCount: "80+",
       mapColor: "from-purple-900/80 to-purple-800/60",
       borderColor: "",
@@ -117,7 +117,7 @@ export default function LocationMap() {
         "Maritime Services",
         "Regional Trade"
       ],
-      operations: ["Marketing", "Events", "Logistics", "Design"],
+      operations: ["Marketing", "Events", "Logistics", "Kit Factory"],
       employeeCount: "35+",
       mapColor: "from-rose-900/80 to-rose-800/60",
       borderColor: "",
@@ -132,7 +132,7 @@ export default function LocationMap() {
         "Manufacturing",
         "Distribution Hub"
       ],
-      operations: ["Marketing", "Events", "Logistics", "Design"],
+      operations: ["Marketing", "Events", "Logistics", "Kit Factory"],
       employeeCount: "160+",
       mapColor: "from-green-900/80 to-green-800/60",
       borderColor: "",
