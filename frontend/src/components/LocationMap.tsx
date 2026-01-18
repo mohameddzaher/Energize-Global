@@ -380,7 +380,7 @@ export default function LocationMap() {
                   <div className="text-gray-300 text-[10px]">Get directions to this location</div>
                 </div>
                 <a
-                  href={`https://www.google.com/maps?q=${activeData.coordinates}`}
+                  href="https://maps.app.goo.gl/dCjJ52mncRA9pWq7A"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-3 py-1.5 bg-gradient-to-r from-gray-800 to-black text-white text-[11px] rounded hover:scale-105 transition-all flex items-center gap-1"
