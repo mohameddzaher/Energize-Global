@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { useMemo } from "react";
+import Link from "next/link";
+import type { CSSProperties, ReactNode } from "react";
 
 interface CompanyCardProps {
   name: string;
@@ -34,13 +35,13 @@ export default function CompanyCard({
   description,
   index,
 }: CompanyCardProps) {
-  const colorIndex = useMemo(() => index % COLORS.length, [index]);
+  const colorIndex = index % COLORS.length;
+  const isInternal = url.startsWith("/");
 
   return (
-    <a
+    <Wrapper
       href={url}
-      target="_blank"
-      rel="noopener noreferrer"
+      isInternal={isInternal}
       className={`group relative p-3 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg border border-gray-700/50 ${BORDER_COLORS[colorIndex]} transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-red-500/15`}
       style={{ minHeight: "150px" }}
     >
@@ -99,6 +100,36 @@ export default function CompanyCard({
 
       {/* Corner accent - أصغر */}
       <div className="absolute bottom-1 right-1 w-1 h-1 bg-gradient-to-br from-red-500/30 to-amber-500/20 rounded-full group-hover:scale-150 transition-transform duration-300"></div>
+    </Wrapper>
+  );
+}
+
+interface WrapperProps {
+  href: string;
+  isInternal: boolean;
+  className: string;
+  style: CSSProperties;
+  children: ReactNode;
+}
+
+function Wrapper({ href, isInternal, className, style, children }: WrapperProps) {
+  if (isInternal) {
+    return (
+      <Link href={href} className={className} style={style}>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+      style={style}
+    >
+      {children}
     </a>
   );
 }

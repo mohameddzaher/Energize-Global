@@ -18,7 +18,7 @@ export const companies: Company[] = [
   {
     name: "Energize Events",
     logo: "/images/Energize Event.png",
-    url: "https://energize-events.netlify.app/",
+    url: "https://eevent-sa.com/",
     description: "Premium event management and production",
     industry: "Events"
   },
@@ -32,28 +32,28 @@ export const companies: Company[] = [
   {
     name: "Energize Design",
     logo: "/images/Energize Design.png",
-    url: "https://manufacturing.energize.com",
+    url: "https://energize-design.netlify.app/",
     description: "Interior design combines function with style",
     industry: "Design"
   },
   {
     name: "Kit Factory",
     logo: "/images/Kit Factory.png",
-    url: "https://consulting.energize.com",
+    url: "/under-construction/kit-factory",
     description: "Modular construction and building systems",
     industry: "Construction"
   },
   {
     name: "Al Dewan",
     logo: "/images/Diwan Adly.png",
-    url: "https://tech.energize.com",
+    url: "/under-construction/al-dewan",
     description: "Cultural and governmental advisory services",
     industry: "Consulting"
   },
   {
     name: "Energize Agency",
     logo: "/images/Energize Agency.png",
-    url: "https://consulting.energize.com",
+    url: "/under-construction/energize-agency",
     description: "Creative branding and advertising agency",
     industry: "Advertising"
   },
@@ -65,10 +65,10 @@ export const companies: Company[] = [
     industry: "Education"
   },
   {
-    name: "Vision",
-    logo: "/images/Vision.png",
-    url: "https://consulting.energize.com",
-    description: "Strategic planning and future forecasting",
-    industry: "Strategy"
+    name: "Energize Tech Solutions",
+    logo: "/images/ets.png",
+    url: "https://ets-ksa.com/",
+    description: "Technology solutions and digital transformation services",
+    industry: "Technology"
   },
 ];
