@@ -32,7 +32,7 @@ export const companies: Company[] = [
   {
     name: "Energize Design",
     logo: "/images/Energize Design.png",
-    url: "https://energize-design.netlify.app/",
+    url: "https://energize-designs.com",
     description: "Interior design combines function with style",
     industry: "Design"
   },
