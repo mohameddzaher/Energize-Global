@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 import { User } from "../../types";
 import { adminAPI } from "../utils/api";
 import ConfirmDialog from "../components/ConfirmDialog";
@@ -38,6 +39,8 @@ export default function UserManagement() {
   const [creating, setCreating] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [updatingPerm, setUpdatingPerm] = useState(false);
+  const [showCreatePassword, setShowCreatePassword] = useState(false);
+  const [showEditPassword, setShowEditPassword] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; userId: string | null }>({
     isOpen: false,
     userId: null
@@ -56,6 +59,8 @@ export default function UserManagement() {
       role: "user",
       bookingPermissions: { smallRoom: true, largeRoom: false },
     });
+    setShowCreatePassword(false);
+    setShowEditPassword(false);
   };
 
   const uidOf = (u: User) => (u as any)._id || (u as any).id || u.email;
@@ -559,17 +564,28 @@ export default function UserManagement() {
                 >
                   Password
                 </label>
-                <input
-                  id="create-password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData((p) => ({ ...p, password: e.target.value }))
-                  }
-                  className="w-full px-2 py-1.5 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
-                  required
-                  placeholder="Enter password"
-                />
+                <div className="relative">
+                  <input
+                    id="create-password"
+                    type={showCreatePassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, password: e.target.value }))
+                    }
+                    className="w-full px-2 py-1.5 pr-9 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
+                    required
+                    placeholder="Enter password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCreatePassword((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#f37121] transition-colors"
+                    title={showCreatePassword ? "Hide password" : "Show password"}
+                    aria-label={showCreatePassword ? "Hide password" : "Show password"}
+                  >
+                    {showCreatePassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -723,16 +739,27 @@ export default function UserManagement() {
                 >
                   New Password (optional)
                 </label>
-                <input
-                  id="edit-password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData((p) => ({ ...p, password: e.target.value }))
-                  }
-                  className="w-full px-2 py-1.5 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
-                  placeholder="Leave empty to keep current"
-                />
+                <div className="relative">
+                  <input
+                    id="edit-password"
+                    type={showEditPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, password: e.target.value }))
+                    }
+                    className="w-full px-2 py-1.5 pr-9 text-sm bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f37121] text-white"
+                    placeholder="Leave empty to keep current"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEditPassword((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#f37121] transition-colors"
+                    title={showEditPassword ? "Hide password" : "Show password"}
+                    aria-label={showEditPassword ? "Hide password" : "Show password"}
+                  >
+                    {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
 
               <div className="flex gap-2 pt-2">
