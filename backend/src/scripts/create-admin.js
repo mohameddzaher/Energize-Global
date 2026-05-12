@@ -25,8 +25,8 @@ async function createAdmin() {
   console.log('\n🚀 Starting admin creation...');
   
   // استخدم URI مباشرة من المتغير أو استخدم الافتراضي
-  const mongoUri = process.env.MONGODB_URI || 
-                   'mongodb+srv://energize144_db_user:DitNcDe7TMe9SGKq@energize-cluster.npbgd01.mongodb.net/energize-meeting-system?retryWrites=true&w=majority';
+  const mongoUri = process.env.MONGODB_URI ||
+                   'mongodb+srv://energizetechsolutions_db_user:RVzkyj8SlAtphWMt@energize-global-new.osvcz7e.mongodb.net/energize-meeting-system?retryWrites=true&w=majority&appName=energize-global-new';
   
   console.log('📡 Using MongoDB URI:', mongoUri.substring(0, 50) + '...');
 
